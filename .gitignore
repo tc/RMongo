@@ -1,0 +1,8 @@
+.DS_Store
+*~
+src/r-mongo-scala/target
+*.iws
+*.ipr
+*.iml
+*.class
+.idea
