@@ -130,7 +130,7 @@
                         <configuration>
                             <target>
                                 <copy file="target/${project.name}-${project.version}.jar"
-                                      tofile="../../lib/${project.name}-${project.version}.jar"/>
+                                  tofile="../../inst/java/${project.name}-${project.version}.jar"/>
                             </target>
                         </configuration>
                     </execution>

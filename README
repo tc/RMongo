@@ -2,8 +2,6 @@ RMongo
 ----
 @tommychheng
 
-**NOT WORKING AS A PACKAGE YET.
-
 This is a R package which lets you query MongoDB databases.
 
 

@@ -1,0 +1,4 @@
+import('rJava')
+export('mongoDbConnect')
+exportClass('RMongo')
+exportMethods('dbInsertDocument', 'dbGetQuery', 'dbDisconnect')

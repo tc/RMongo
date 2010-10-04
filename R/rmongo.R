@@ -1,14 +1,9 @@
-library("rJava")
-library("rjson")
-.jinit()
-.jaddClassPath("../lib/r-mongo-scala-1.0-SNAPSHOT.jar")
-
-setClass("RMongo", representation(javaMongo = "jobjRef"))
-
 mongoDbConnect <- function(dbName, host="localhost", port=27017){
   rmongo <- new("RMongo", javaMongo = .jnew("com/quid/RMongo", dbName))
   rmongo
 }
+
+setClass("RMongo", representation(javaMongo = "jobjRef"))
 
 setGeneric("dbInsertDocument", function(this, collection, doc) standardGeneric("dbInsertDocument"))
 setMethod("dbInsertDocument", signature(this="RMongo", collection="character", doc="character"),
