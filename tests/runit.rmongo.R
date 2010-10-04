@@ -1,4 +1,10 @@
 library('RUnit')
+library('rJava')
+library('rjson')
+
+.jinit()
+.jaddClassPath('../inst/java/r-mongo-scala-1.0-SNAPSHOT.jar')
+
 source('../R/rmongo.R', chdir=TRUE)
 
 test.dbInsertDocument <- function(){
