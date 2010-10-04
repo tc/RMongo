@@ -9,4 +9,5 @@ Description: MongoDB Database interface for R. The interface is provided via Jav
 License: GPL-3
 LazyLoad: yes
 Depends: R(>= 2.8.0), rJava, rjson
+SystemRequirements: Java (>= 1.6)
 URL: http://github.com/quid/RMongo
