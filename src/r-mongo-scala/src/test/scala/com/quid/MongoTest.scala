@@ -64,4 +64,16 @@ class MongoTest{
     Assert.assertEquals(record.getOrElse("foo", ""), "bar")
   }
 
+
+  @Test
+  def testDbGetQuerySorting{
+    val rMongo = new RMongo("test")
+    val results = rMongo.dbGetQuery("test_data", """ { "$query": {}, "$orderby": { "foo": -1 } }} """)
+
+    val jsonParsed = scala.util.parsing.json.JSON.parseFull(results)
+    val records = jsonParsed.getOrElse(List()).asInstanceOf[List[Any]]
+    val record = records.head.asInstanceOf[Map[String,Any]]
+
+    Assert.assertEquals(record.getOrElse("foo", ""), "n1")
+  }
 }

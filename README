@@ -1,10 +1,28 @@
 RMongo
+http://github.com/quid/RMongo
 ----
 @tommychheng
 
 This is a R package which lets you query MongoDB databases.
 
+Feel free to report bugs/feature requests on github.
 
+Test:
+cd tests
+r < test.runner.R --no-save
+
+Build:
+cd ..
+R CMD build RMongo
+
+Install:
+R CMD install RMongo*.tar.gz
+
+Upload to CRAN:
+ftp ftp://CRAN.R-project.org/incoming/
+put RMongo*.tar.gz
+
+---
 # ---------------------------------------------------------------------------
 # Copyright 2010, Quid, Inc.
 #
