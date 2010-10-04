@@ -4,7 +4,7 @@ Title: MongoDB Client for R
 Version: 0.0.5
 Date: 2010-09-22
 Author: Tommy Chheng
-Maintainer: Tommy Chheng <tommy@quid.com>
+Maintainer: Tommy Chheng <tommy.chheng at gmail.com>
 Description: MongoDB Database interface for R. The interface is provided via Java calls to the mongo-java-driver.
 License: GPL-3
 LazyLoad: yes
