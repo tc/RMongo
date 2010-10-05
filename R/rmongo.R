@@ -1,6 +1,17 @@
+library('plyr')
+library('rjson')
+
 mongoDbConnect <- function(dbName, host="localhost", port=27017){
   rmongo <- new("RMongo", javaMongo = .jnew("com/quid/RMongo", dbName))
   rmongo
+}
+
+flattenIdColumn <- function(rjson.list){
+  lapply(rjson.list, function(doc){
+    new.doc = doc
+    new.doc$`_id` = doc$`_id`$`$oid`
+    new.doc
+  })
 }
 
 setClass("RMongo", representation(javaMongo = "jobjRef"))
@@ -17,17 +28,18 @@ setMethod("dbInsertDocument", signature(this="RMongo", collection="character", d
 # format can be json or data.frame
 # json will return an rjson object
 # data.frame will attempt to convert to flat data frame table.
-setGeneric("dbGetQuery", function(this, collection, query) standardGeneric("dbGetQuery"))
-setMethod("dbGetQuery", signature(this="RMongo", collection="character", query="character"),
-  function(this, collection, query){
-    format <- "json"
-    results <- .jcall(this@javaMongo, "S", "dbGetQuery", collection, query, format)
+setGeneric("dbGetQuery", function(this, collection, query, format) standardGeneric("dbGetQuery"))
+setMethod("dbGetQuery", signature(this="RMongo", collection="character", query="character", format="character"),
+  function(this, collection, query, format="json"){
+    results <- .jcall(this@javaMongo, "S", "dbGetQuery", collection, query)
+    json.results <- fromJSON(results)
+    
     if(format == "json"){
-      jsonResults <- fromJSON(results)
-      jsonResults
+      json.results
     }else if(format == "data.frame"){
-     #convert to data.frame table
-     results
+      transformed.docs <- flattenIdColumn(json.results)
+      data.frame.results <- ldply(transformed.docs, data.frame)
+      data.frame.results
     }
   }
 )
@@ -38,4 +50,6 @@ setMethod("dbDisconnect", signature(this="RMongo"),
     .jcall(this@javaMongo, "V", "close")
   }
 )
+
+
 

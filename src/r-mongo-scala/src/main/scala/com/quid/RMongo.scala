@@ -28,16 +28,13 @@ class RMongo(dbName: String, host: String, port: Int) {
     if(results.getError == null) "ok" else results.getError
   }
 
-  def dbGetQuery(collectionName: String, query: String, format: String = "json"): String = {
+  def dbGetQuery(collectionName: String, query: String): String = {
     val dbCollection = db.getCollection(collectionName)
 
     val queryObject = JSON.parse(query).asInstanceOf[DBObject]
     val cursor = dbCollection.find(queryObject).iterator
 
-    val results = format match {
-      case "json" => toJsonOutput(cursor)
-      case "data.frame" => toDataFrameOutput(cursor)
-    }
+    val results = toJsonOutput(cursor)
 
     results
   }
@@ -52,10 +49,6 @@ class RMongo(dbName: String, host: String, port: Int) {
     results.deleteCharAt(results.length - 1) //remove last comma
     results.append("]")
     results.toString
-  }
-
-  def toDataFrameOutput(cursor: java.util.Iterator[DBObject]): String = {
-    "NOT SUPPORTED YET"
   }
 
   def close() {
