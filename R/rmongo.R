@@ -16,10 +16,10 @@ flattenIdColumn <- function(rjson.list){
 
 setClass("RMongo", representation(javaMongo = "jobjRef"))
 
-setGeneric("dbInsertDocument", function(this, collection, doc) standardGeneric("dbInsertDocument"))
-setMethod("dbInsertDocument", signature(this="RMongo", collection="character", doc="character"),
-  function(this, collection, doc){
-    results <- .jcall(this@javaMongo, "S", "dbInsertDocument", collection, doc)
+setGeneric("dbInsertDocument", function(rmongo.object, collection, doc) standardGeneric("dbInsertDocument"))
+setMethod("dbInsertDocument", signature(rmongo.object="RMongo", collection="character", doc="character"),
+  function(rmongo.object, collection, doc){
+    results <- .jcall(rmongo.object@javaMongo, "S", "dbInsertDocument", collection, doc)
     results
   }
 )
@@ -28,10 +28,10 @@ setMethod("dbInsertDocument", signature(this="RMongo", collection="character", d
 # format can be json or data.frame
 # json will return an rjson object
 # data.frame will attempt to convert to flat data frame table.
-setGeneric("dbGetQuery", function(this, collection, query, format) standardGeneric("dbGetQuery"))
-setMethod("dbGetQuery", signature(this="RMongo", collection="character", query="character", format="character"),
-  function(this, collection, query, format="json"){
-    results <- .jcall(this@javaMongo, "S", "dbGetQuery", collection, query)
+setGeneric("dbGetQuery", function(rmongo.object, collection, query, format) standardGeneric("dbGetQuery"))
+setMethod("dbGetQuery", signature(rmongo.object="RMongo", collection="character", query="character", format="character"),
+  function(rmongo.object, collection, query, format="json"){
+    results <- .jcall(rmongo.object@javaMongo, "S", "dbGetQuery", collection, query)
     json.results <- fromJSON(results)
     
     if(format == "json"){
@@ -44,10 +44,10 @@ setMethod("dbGetQuery", signature(this="RMongo", collection="character", query="
   }
 )
 
-setGeneric("dbDisconnect", function(this) standardGeneric("dbDisconnect"))
-setMethod("dbDisconnect", signature(this="RMongo"),
-  function(this){
-    .jcall(this@javaMongo, "V", "close")
+setGeneric("dbDisconnect", function(rmongo.object) standardGeneric("dbDisconnect"))
+setMethod("dbDisconnect", signature(rmongo.object="RMongo"),
+  function(rmongo.object){
+    .jcall(rmongo.object@javaMongo, "V", "close")
   }
 )
 

@@ -1,11 +1,6 @@
 library('RUnit')
 library('rJava')
 
-.jinit()
-.jaddClassPath('../inst/java/r-mongo-scala-1.0-SNAPSHOT.jar')
-
-source('../R/rmongo.R', chdir=TRUE)
-
 test.dbInsertDocument <- function(){
   mongo <- mongoDbConnect("test")
   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
@@ -15,8 +10,8 @@ test.dbInsertDocument <- function(){
 }
 
 test.dbGetQuery <- function(){
-  #insert the records using r-mongo-scala project
   mongo <- mongoDbConnect("test")
+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
   output <- dbGetQuery(mongo, "test_data", '{"foo": "bar"}', format='json')
   dbDisconnect(mongo)
   
@@ -32,7 +27,7 @@ test.dbGetQueryDataFrameFormat <- function(){
 }
 
 test.dbGetQuerySorting <- function(){
- #insert the records using r-mongo-scala project
+  #insert the records using r-mongo-scala project
   mongo <- mongoDbConnect("test")
   dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
   dbInsertDocument(mongo, "test_data", '{"foo": "newbar"}')
@@ -42,3 +37,5 @@ test.dbGetQuerySorting <- function(){
   
   checkEquals("newbar", output[[1]]$foo)
 }
+
+

@@ -1,0 +1,66 @@
+
+R version 2.11.1 (2010-05-31)
+Copyright (C) 2010 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> library("RUnit")
+> testsuite.rmongo <- defineTestSuite("rmongo", dirs=file.path("."))
+> 
+> testResult <- runTestSuite(testsuite.rmongo)
+
+
+Executing test function test.dbGetQuery  ...  done successfully.
+
+
+
+Executing test function test.dbGetQueryDataFrameFormat  ...  done successfully.
+
+
+
+Executing test function test.dbGetQuerySorting  ...  done successfully.
+
+
+
+Executing test function test.dbInsertDocument  ...  done successfully.
+
+> printTextProtocol(testResult)
+RUNIT TEST PROTOCOL -- Tue Oct  5 14:03:06 2010 
+*********************************************** 
+Number of test functions: 4 
+Number of errors: 0 
+Number of failures: 0 
+
+ 
+1 Test Suite : 
+rmongo - 4 test functions, 0 errors, 0 failures
+
+
+
+Details 
+*************************** 
+Test Suite: rmongo 
+Test function regexp: ^test.+ 
+Test file regexp: ^runit.+\.[rR]$ 
+Involved directory: 
+. 
+--------------------------- 
+Test file: ./runit.rmongo.R 
+test.dbGetQuery: (1 checks) ... OK (0.14 seconds)
+test.dbGetQueryDataFrameFormat: (1 checks) ... OK (0.02 seconds)
+test.dbGetQuerySorting: (1 checks) ... OK (0.02 seconds)
+test.dbInsertDocument: (1 checks) ... OK (0.01 seconds)
+> 
