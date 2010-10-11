@@ -61,10 +61,19 @@ class MongoTest{
     val records = jsonParsed.getOrElse(List()).asInstanceOf[List[Any]]
     val record = records.head.asInstanceOf[Map[String,Any]]
 
-    Assert.assertEquals(record.getOrElse("foo", ""), "bar")
+    Assert.assertEquals("bar", record.getOrElse("foo", ""))
   }
 
+  @Test
+  def testDbGetQueryWithEmptyCollection{
+    val rMongo = new RMongo("test")
+    val results = rMongo.dbGetQuery("empty_collection", """ {} """)
 
+//    val jsonParsed = scala.util.parsing.json.JSON.parseFull(results)
+//    val records = jsonParsed.getOrElse(List()).asInstanceOf[List[Any]]
+
+    Assert.assertEquals("[]", results)
+  }
   @Test
   def testDbGetQuerySorting{
     val rMongo = new RMongo("test")
@@ -74,6 +83,6 @@ class MongoTest{
     val records = jsonParsed.getOrElse(List()).asInstanceOf[List[Any]]
     val record = records.head.asInstanceOf[Map[String,Any]]
 
-    Assert.assertEquals(record.getOrElse("foo", ""), "n1")
+    Assert.assertEquals("n1", record.getOrElse("foo", ""))
   }
 }

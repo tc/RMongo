@@ -20,10 +20,18 @@ test.dbGetQuery <- function(){
 
 test.dbGetQueryDataFrameFormat <- function(){
   mongo <- mongoDbConnect('test')
+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
   output <- dbGetQuery(mongo, 'test_data', '{"foo":"bar"}', format='data.frame')
   dbDisconnect(mongo)
   
   checkEquals("bar", as.character(output[1,]$foo))
+}
+
+test.dbGetQueryWithEmptyCollection <- function(){
+  mongo <- mongoDbConnect('test')
+  output <- dbGetQuery(mongo, 'test_data', '{"EMPTY": "EMPTY"}', format='json')
+  dbDisconnect(mongo)
+  checkEquals(list(), output)
 }
 
 test.dbGetQuerySorting <- function(){

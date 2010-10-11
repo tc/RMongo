@@ -1,6 +1,8 @@
 library('plyr')
 library('rjson')
 
+setClass("RMongo", representation(javaMongo = "jobjRef"))
+
 mongoDbConnect <- function(dbName, host="localhost", port=27017){
   rmongo <- new("RMongo", javaMongo = .jnew("com/quid/RMongo", dbName))
   rmongo
@@ -13,8 +15,6 @@ flattenIdColumn <- function(rjson.list){
     new.doc
   })
 }
-
-setClass("RMongo", representation(javaMongo = "jobjRef"))
 
 setGeneric("dbInsertDocument", function(rmongo.object, collection, doc) standardGeneric("dbInsertDocument"))
 setMethod("dbInsertDocument", signature(rmongo.object="RMongo", collection="character", doc="character"),

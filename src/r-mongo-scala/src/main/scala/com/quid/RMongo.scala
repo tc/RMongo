@@ -2,6 +2,7 @@ package com.quid
 
 import com.mongodb.util.JSON
 import com.mongodb.{Mongo, DBObject, DB, DBCursor}
+import collection.mutable.ListBuffer
 
 /**
  *
@@ -40,15 +41,13 @@ class RMongo(dbName: String, host: String, port: Int) {
   }
 
   def toJsonOutput(cursor: java.util.Iterator[DBObject]): String = {
-    val results = new StringBuffer("[")
+    val results = ListBuffer[String]()
     while (cursor.hasNext) {
       val item = cursor.next
       results.append(item.toString)
-      results.append(",")
     }
-    results.deleteCharAt(results.length - 1) //remove last comma
-    results.append("]")
-    results.toString
+
+    results.mkString("[", ",", "]")
   }
 
   def close() {

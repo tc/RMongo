@@ -22,11 +22,13 @@ A typical workflow using RMongo:
         output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
       }
     \item Query a MongoDB collection:
-     This will query for a documents which have a "foo" attribute with the value of "bar". The return value will be a list of rjson objects or a converted data.frame depending on the format parameter. NOTE: nested documents and arrays may not work properly if you specify a data.frame.
+     This will query for documents which have a "foo" attribute with the value of "bar". The return value will be a list of rjson objects or a converted data.frame depending on the format parameter. NOTE: nested documents and arrays may not work properly if you specify a data.frame.
       \preformatted{
-        output <- dbGetQuery(mongo, "test_data", '{"foo": "bar"}', format='json')
+        output <- dbGetQuery(mongo, "test_data", 
+                                    '{"foo": "bar"}', format='json')
 
-        output <- dbGetQuery(mongo, "test_data", '{"foo": "bar"}', format='data.frame')
+        output <- dbGetQuery(mongo, "test_data", 
+                                    '{"foo": "bar"}', format='data.frame')
 
       }
     \item Close the connection:
