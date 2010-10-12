@@ -1,5 +1,8 @@
-\name{dbGetQuery}
+\name{dbGetQuery-methods}
+\docType{methods}
 \alias{dbGetQuery}
+\alias{dbGetQuery-methods}
+\alias{dbGetQuery,RMongo,character,character,character-method}
 
 \title{Performing a MongoDB query}
 

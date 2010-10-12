@@ -1,5 +1,8 @@
-\name{dbInsertDocument}
+\name{dbInsertDocument-methods}
+\docType{methods}
 \alias{dbInsertDocument}
+\alias{dbInsertDocument-methods}
+\alias{dbInsertDocument,RMongo,character,character-method}
 
 \title{Insert a document into a MongoDB collection}
 
@@ -18,7 +21,7 @@ Insert a json character object into the mongodb collection.
 }
 
 \seealso{
-  \code{\link{dbGetQuery}}
+  \code{\link{dbGetQuery-methods}}
 }
 \examples{
   mongo <- mongoDbConnect("test")
