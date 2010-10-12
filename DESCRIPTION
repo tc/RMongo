@@ -1,13 +1,13 @@
 Package: RMongo
 Type: Package
 Title: MongoDB Client for R
-Version: 0.0.8
-Date: 2010-10-05
+Version: 0.0.9
+Date: 2010-10-12
 Author: Tommy Chheng
 Maintainer: Tommy Chheng <tommy.chheng@gmail.com>
 Description: MongoDB Database interface for R. The interface is provided via Java calls to the mongo-java-driver.
 License: GPL-3
 LazyLoad: yes
-Depends: R(>= 2.8.0), rJava, rjson, plyr
+Depends: R(>= 2.11.0), rJava, rjson, plyr, methods
 SystemRequirements: Java (>= 1.6), MongoDB (>= 1.6)
 URL: http://github.com/quid/RMongo

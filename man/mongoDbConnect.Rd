@@ -17,9 +17,6 @@ mongoDbConnect(dbName, host="localhost", port=27017)
   \item{port}{ Port number. Default to mongodb's default port 27017. {optional}}
 }
 
-\seealso{
-  \code{\link{dbDisconnect}}
-}
 \examples{
   mongo <- mongoDbConnect("test")
 }

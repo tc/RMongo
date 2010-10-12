@@ -69,9 +69,6 @@ class MongoTest{
     val rMongo = new RMongo("test")
     val results = rMongo.dbGetQuery("empty_collection", """ {} """)
 
-//    val jsonParsed = scala.util.parsing.json.JSON.parseFull(results)
-//    val records = jsonParsed.getOrElse(List()).asInstanceOf[List[Any]]
-
     Assert.assertEquals("[]", results)
   }
   @Test

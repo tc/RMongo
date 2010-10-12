@@ -1,5 +1,8 @@
-\name{dbDisconnect}
+\name{dbDisconnect-methods}
+\docType{methods}
 \alias{dbDisconnect}
+\alias{dbDisconnect-methods}
+\alias{dbDisconnect,RMongo-method}
 
 \title{Disconnect from the MongoDB database}
 
