@@ -25,15 +25,16 @@ A typical workflow using RMongo:
      This will query for documents which have a "foo" attribute with the value of "bar". The return value will be a list of rjson objects or a converted data.frame depending on the format parameter. NOTE: nested documents and arrays may not work properly if you specify a data.frame.
       \preformatted{
         output <- dbGetQuery(mongo, "test_data", 
-                                    '{"foo": "bar"}', format='json')
-
-        output <- dbGetQuery(mongo, "test_data", 
-                                    '{"foo": "bar"}', format='data.frame')
-
+                                    '{"foo": "bar"}')
       }
     \item Close the connection:
       \preformatted{
         dbDisconnect(mongo)
+      }
+    \item Large result sets:
+    Set your java heap space to a large number to support loading more results into memory.
+      \preformatted{
+        options( java.parameters = "-Xmx2g" )
       }
   }
 }

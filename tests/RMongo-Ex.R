@@ -1,8 +1,6 @@
 library("RUnit")
 library("RMongo")
 library('rJava')
-library('rjson')
-library('plyr')
 
 test.dbInsertDocument <- function(){
   mongo <- mongoDbConnect("test")
@@ -15,26 +13,25 @@ test.dbInsertDocument <- function(){
 test.dbGetQuery <- function(){
   mongo <- mongoDbConnect("test")
   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
-  output <- dbGetQuery(mongo, "test_data", '{"foo": "bar"}', format='json')
+  output <- dbGetQuery(mongo, "test_data", '{"foo": "bar"}')
   dbDisconnect(mongo)
-  
-  checkEquals("bar", output[[1]]$foo)
+  checkEquals("bar", as.character(output[1,]$foo))
 }
 
-test.dbGetQueryDataFrameFormat <- function(){
-  mongo <- mongoDbConnect('test')
+test.dbGetQuerySkipAndLimit <- function(){
+  mongo <- mongoDbConnect("test")
   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
-  output <- dbGetQuery(mongo, 'test_data', '{"foo":"bar"}', format='data.frame')
+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
+  output <- dbGetQuery(mongo, "test_data", '{"foo": "bar"}', 0, 1)
   dbDisconnect(mongo)
-  
-  checkEquals("bar", as.character(output[1,]$foo))
+  checkEquals(1, length(output[output$foo == 'bar', 1]))
 }
 
 test.dbGetQueryWithEmptyCollection <- function(){
   mongo <- mongoDbConnect('test')
-  output <- dbGetQuery(mongo, 'test_data', '{"EMPTY": "EMPTY"}', format='json')
+  output <- dbGetQuery(mongo, 'test_data', '{"EMPTY": "EMPTY"}')
   dbDisconnect(mongo)
-  checkEquals(list(), output)
+  checkEquals(data.frame(), output)
 }
 
 test.dbGetQuerySorting <- function(){
@@ -43,15 +40,15 @@ test.dbGetQuerySorting <- function(){
   dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
   dbInsertDocument(mongo, "test_data", '{"foo": "newbar"}')
   
-  output <- dbGetQuery(mongo, "test_data", '{ "$query": {}, "$orderby": { "foo": -1 } }}', format='json')
+  output <- dbGetQuery(mongo, "test_data", '{ "$query": {}, "$orderby": { "foo": -1 } }}')
   dbDisconnect(mongo)
   
-  checkEquals("newbar", output[[1]]$foo)
+  checkEquals("newbar", as.character(output[1,]$foo))
 }
 
 
 test.dbInsertDocument()
 test.dbGetQuery()
-test.dbGetQueryDataFrameFormat()
+test.dbGetQuerySkipAndLimit()
 test.dbGetQueryWithEmptyCollection()
 test.dbGetQuerySorting()
