@@ -1,9 +1,7 @@
 library('rJava')
-library('plyr')
-library('rjson')
 
 #.jinit()
-#.jaddClassPath("inst/java/r-mongo-scala-1.0-SNAPSHOT.jar"")
+#.jaddClassPath("inst/java/r-mongo-scala-1.0-SNAPSHOT.jar")
 
 setClass("RMongo", representation(javaMongo = "jobjRef"))
 
@@ -12,14 +10,14 @@ mongoDbConnect <- function(dbName, host="localhost", port=27017){
   rmongo
 }
 
-flattenIdColumn <- function(rjson.list){
-  lapply(rjson.list, function(doc){
-    new.doc = doc
-    new.doc$`_id` = doc$`_id`$`$oid`
-    new.doc
-  })
-}
-
+setGeneric("dbShowCollections", function(rmongo.object) standardGeneric("dbShowCollections"))
+setMethod("dbShowCollections", signature(rmongo.object="RMongo"),
+   function(rmongo.object){
+    results <- .jcall(rmongo.object@javaMongo, "[S", "dbShowCollections")
+    results
+  }
+)
+ 
 setGeneric("dbInsertDocument", function(rmongo.object, collection, doc) standardGeneric("dbInsertDocument"))
 setMethod("dbInsertDocument", signature(rmongo.object="RMongo", collection="character", doc="character"),
   function(rmongo.object, collection, doc){
@@ -28,23 +26,22 @@ setMethod("dbInsertDocument", signature(rmongo.object="RMongo", collection="char
   }
 )
 
-#
-# format can be json or data.frame
-# json will return an rjson object
-# data.frame will attempt to convert to flat data frame table.
-setGeneric("dbGetQuery", function(rmongo.object, collection, query, format) standardGeneric("dbGetQuery"))
-setMethod("dbGetQuery", signature(rmongo.object="RMongo", collection="character", query="character", format="character"),
-  function(rmongo.object, collection, query, format="json"){
-    results <- .jcall(rmongo.object@javaMongo, "S", "dbGetQuery", collection, query)
-    json.results <- fromJSON(results)
-    
-    if(format == "json"){
-      json.results
-    }else if(format == "data.frame"){
-      transformed.docs <- flattenIdColumn(json.results)
-      data.frame.results <- ldply(transformed.docs, data.frame)
-      data.frame.results
+setGeneric("dbGetQuery", function(rmongo.object, collection, query, skip=0, limit=1000) standardGeneric("dbGetQuery"))
+setMethod("dbGetQuery", signature(rmongo.object="RMongo", collection="character", query="character", skip='numeric', limit='numeric'),
+  function(rmongo.object, collection, query, skip, limit){
+    results <- .jcall(rmongo.object@javaMongo, "S", "dbPaginateGetQuery", collection, query, skip, limit)
+    if(results == ""){
+      data.frame()
+    }else{
+      con <- textConnection(results)
+      data.frame.results <- read.csv(con)
     }
+  }
+)
+
+setMethod("dbGetQuery", signature(rmongo.object="RMongo", collection="character", query="character", skip='missing', limit='missing'),
+  function(rmongo.object, collection, query, skip=0, limit=1000){
+    dbGetQuery(rmongo.object, collection,query,skip,limit)
   }
 )
 
@@ -54,6 +51,4 @@ setMethod("dbDisconnect", signature(rmongo.object="RMongo"),
     .jcall(rmongo.object@javaMongo, "V", "close")
   }
 )
-
-
 

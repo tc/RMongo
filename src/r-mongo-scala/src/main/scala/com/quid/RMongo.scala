@@ -1,8 +1,9 @@
 package com.quid
 
 import com.mongodb.util.JSON
-import com.mongodb.{Mongo, DBObject, DB, DBCursor}
 import collection.mutable.ListBuffer
+import collection.JavaConversions._
+import com.mongodb._
 
 /**
  *
@@ -19,28 +20,59 @@ class RMongo(dbName: String, host: String, port: Int) {
 
   def this(dbName: String) = this (dbName, "localhost", 27017)
 
+  def dbShowCollections():Array[String] = {
+    val names = db.getCollectionNames().map(name => name)
+
+    names.toArray
+  }
 
   def dbInsertDocument(collectionName: String, jsonDoc: String): String = {
+    dbModificationAction(collectionName, jsonDoc, _.insert(_))
+  }
+
+  def dbRemoveQuery(collectionName: String, query: String): String = {
+    dbModificationAction(collectionName, query, _.remove(_))
+  }
+
+  def dbModificationAction(collectionName: String,
+                          query: String,
+                          action:(DBCollection, DBObject) => WriteResult): String = {
     val dbCollection = db.getCollection(collectionName)
 
-    val docObject = JSON.parse(jsonDoc).asInstanceOf[DBObject]
-    val results = dbCollection.insert(docObject)
+    val queryObject = JSON.parse(query).asInstanceOf[DBObject]
+    val results = action(dbCollection, queryObject)
 
     if(results.getError == null) "ok" else results.getError
   }
 
   def dbGetQuery(collectionName: String, query: String): String = {
+    dbPaginateGetQuery(collectionName, query, 0, 1000)
+  }
+
+  implicit def dbPaginateGetQuery(collectionName: String, query: String, skipNum:Double, limitNum:Double):String = dbPaginateGetQuery(collectionName, query, skipNum.toInt, limitNum.toInt)
+  def dbPaginateGetQuery(collectionName: String, query: String, skipNum:Int, limitNum:Int): String = {
     val dbCollection = db.getCollection(collectionName)
 
     val queryObject = JSON.parse(query).asInstanceOf[DBObject]
-    val cursor = dbCollection.find(queryObject).iterator
+    val cursor = dbCollection.find(queryObject).skip(skipNum).limit(limitNum)
 
-    val results = toJsonOutput(cursor)
+    val results = RMongo.toCsvOutput(cursor)
 
     results
+ }
+
+  def close() {
+    m.close()
   }
 
-  def toJsonOutput(cursor: java.util.Iterator[DBObject]): String = {
+  def main() {
+
+  }
+}
+
+object RMongo{
+
+  def toJsonOutput(cursor:DBCursor): String = {
     val results = ListBuffer[String]()
     while (cursor.hasNext) {
       val item = cursor.next
@@ -50,11 +82,32 @@ class RMongo(dbName: String, host: String, port: Int) {
     results.mkString("[", ",", "]")
   }
 
-  def close() {
-    m.close()
+  def toCsvOutput(cursor: DBCursor): String = {
+    if(cursor.hasNext == false) return ""
+
+    val results = ListBuffer[String]()
+    var first = true
+    val firstRecord:DBObject = cursor.next
+
+    val keys = firstRecord.keySet.toArray(new Array[String](firstRecord.keySet.size))
+    results.append(keys.mkString(","))
+    results.append(csvRowFromDBObject(keys, cursor.curr))     //append the first row
+
+    while (cursor.hasNext) {
+      results.append(csvRowFromDBObject(keys, cursor.next))
+    }
+
+    results.mkString("\n")
   }
 
-  def main() {
+  def csvRowFromDBObject(keys:Array[String], item:DBObject):String ={
 
+    keys.map{k =>
+      val value = item.get(k)
+
+      if(value != null)
+        "\"" + value.toString.replaceAll("\"", "\\\"") + "\""
+      else
+        "" }.mkString(",")
   }
 }
