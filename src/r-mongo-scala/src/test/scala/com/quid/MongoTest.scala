@@ -84,9 +84,20 @@ class MongoTest{
   }
 
   @Test
+  def testDbGetQueryWithKeys{
+    val rMongo = new RMongo("test")
+    val results = rMongo.dbGetQuery("test_data", """ {} """, """ {"foo": 1} """, 0, 100)
+    println(results)
+    val record = parsedFirstRecordFrom(results)
+
+    Assert.assertEquals("\"bar\"", record.getOrElse("foo", ""))
+    Assert.assertEquals("", record.getOrElse("size", ""))
+  }
+
+  @Test
   def testDbGetQueryWithEmptyCollection{
     val rMongo = new RMongo("test")
-    val results = rMongo.dbGetQuery("empty_collection", """ {} """)
+    val results = rMongo.dbGetQuery("empty_collection", "{}")
 
     Assert.assertEquals("", results)
   }
@@ -94,21 +105,22 @@ class MongoTest{
   @Test
   def testDbGetQuerySorting{
     val rMongo = new RMongo("test")
-    val results = rMongo.dbGetQuery("test_data", """ { "$query": {}, "$orderby": { "foo": -1 } }} """)
+    val results = rMongo.dbGetQuery("test_data",
+      """ { "$query": {}, "$orderby": { "foo": -1 } }} """)
     val record = parsedFirstRecordFrom(results)
 
     Assert.assertEquals("\"n1\"", record.getOrElse("foo", ""))
   }
 
   @Test
-  def testDbPaginateGetQuery{
+  def testDbGetQueryPaginate{
     val rMongo = new RMongo("test")
-    val page1 = rMongo.dbPaginateGetQuery("test_data", """ {} """, 0, 1)
+    val page1 = rMongo.dbGetQuery("test_data", """ {} """, 0, 1)
     val record1 = parsedFirstRecordFrom(page1)
 
     Assert.assertEquals("\"bar\"", record1.getOrElse("foo", ""))
 
-    val page2 = rMongo.dbPaginateGetQuery("test_data", """ {} """, 1, 1)
+    val page2 = rMongo.dbGetQuery("test_data", """ {} """, 1, 1)
     val record2 = parsedFirstRecordFrom(page2)
 
     Assert.assertEquals("\"n1\"", record2.getOrElse("foo", ""))
@@ -131,9 +143,9 @@ class MongoTest{
   def parsedFirstRecordFrom(results: String):Map[String, Any] = {
     val lines = results.split("\n").filter(_.size > 0)
 
-    val keys = lines.head.split(",")
+    val keys = lines.head.split(RMongo.SEPARATOR )
     val entries = lines.drop(1)
-    val entry = entries.headOption.getOrElse("").split(",")
+    val entry = entries.headOption.getOrElse("").split(RMongo.SEPARATOR )
 
     keys.zip(entry).toMap
   }

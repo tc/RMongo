@@ -46,15 +46,35 @@ class RMongo(dbName: String, host: String, port: Int) {
   }
 
   def dbGetQuery(collectionName: String, query: String): String = {
-    dbPaginateGetQuery(collectionName, query, 0, 1000)
+    dbGetQuery(collectionName, query, 0, 1000)
   }
 
-  implicit def dbPaginateGetQuery(collectionName: String, query: String, skipNum:Double, limitNum:Double):String = dbPaginateGetQuery(collectionName, query, skipNum.toInt, limitNum.toInt)
-  def dbPaginateGetQuery(collectionName: String, query: String, skipNum:Int, limitNum:Int): String = {
+  implicit def dbGetQuery(collectionName: String, query: String,
+                                  skipNum:Double, limitNum:Double):String = {
+    dbGetQuery(collectionName, query, skipNum.toInt, limitNum.toInt)
+  }
+
+  def dbGetQuery(collectionName: String, query: String,
+                         skipNum:Int, limitNum:Int): String = {
+    dbGetQuery(collectionName, query, "{}", skipNum, limitNum)
+ }
+
+  def dbGetQuery(collectionName:String, query:String, keys:String): String = {
+    dbGetQuery(collectionName, query, keys, 0, 1000)
+  }
+
+  implicit def dbGetQuery(collectionName: String, query: String, keys:String,
+                                  skipNum:Double, limitNum:Double):String = {
+    dbGetQuery(collectionName, query, keys, skipNum.toInt, limitNum.toInt)
+  }
+
+  def dbGetQuery(collectionName: String, query: String, keys:String,
+                         skipNum:Int, limitNum:Int): String = {
     val dbCollection = db.getCollection(collectionName)
 
     val queryObject = JSON.parse(query).asInstanceOf[DBObject]
-    val cursor = dbCollection.find(queryObject).skip(skipNum).limit(limitNum)
+    val keysObject = JSON.parse(keys).asInstanceOf[DBObject]
+    val cursor = dbCollection.find(queryObject, keysObject).skip(skipNum).limit(limitNum)
 
     val results = RMongo.toCsvOutput(cursor)
 
@@ -71,6 +91,7 @@ class RMongo(dbName: String, host: String, port: Int) {
 }
 
 object RMongo{
+  val SEPARATOR = ";"
 
   def toJsonOutput(cursor:DBCursor): String = {
     val results = ListBuffer[String]()
@@ -79,7 +100,7 @@ object RMongo{
       results.append(item.toString)
     }
 
-    results.mkString("[", ",", "]")
+    results.mkString("[", SEPARATOR, "]")
   }
 
   def toCsvOutput(cursor: DBCursor): String = {
@@ -90,7 +111,7 @@ object RMongo{
     val firstRecord:DBObject = cursor.next
 
     val keys = firstRecord.keySet.toArray(new Array[String](firstRecord.keySet.size))
-    results.append(keys.mkString(","))
+    results.append(keys.mkString(SEPARATOR))
     results.append(csvRowFromDBObject(keys, cursor.curr))     //append the first row
 
     while (cursor.hasNext) {
@@ -108,6 +129,6 @@ object RMongo{
       if(value != null)
         "\"" + value.toString.replaceAll("\"", "\\\"") + "\""
       else
-        "" }.mkString(",")
+        "" }.mkString(SEPARATOR)
   }
 }
