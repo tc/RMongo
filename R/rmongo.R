@@ -36,6 +36,8 @@ setMethod("dbGetQueryForKeys", signature(rmongo.object="RMongo", collection="cha
       con <- textConnection(results)
       data.frame.results <- read.csv(con, sep=";", stringsAsFactors=FALSE)
       close(con)
+
+      data.frame.results
     }
   }
 )
