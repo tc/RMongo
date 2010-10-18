@@ -49,7 +49,7 @@ class RMongo(dbName: String, host: String, port: Int) {
     dbGetQuery(collectionName, query, 0, 1000)
   }
 
-  implicit def dbGetQuery(collectionName: String, query: String,
+  def dbGetQuery(collectionName: String, query: String,
                                   skipNum:Double, limitNum:Double):String = {
     dbGetQuery(collectionName, query, skipNum.toInt, limitNum.toInt)
   }
@@ -63,7 +63,7 @@ class RMongo(dbName: String, host: String, port: Int) {
     dbGetQuery(collectionName, query, keys, 0, 1000)
   }
 
-  implicit def dbGetQuery(collectionName: String, query: String, keys:String,
+  def dbGetQuery(collectionName: String, query: String, keys:String,
                                   skipNum:Double, limitNum:Double):String = {
     dbGetQuery(collectionName, query, keys, skipNum.toInt, limitNum.toInt)
   }

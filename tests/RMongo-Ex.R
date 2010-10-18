@@ -49,9 +49,11 @@ test.dbGetQuerySorting <- function(){
 test.dbGetQueryForKeys <- function(){
   mongo <- mongoDbConnect("test")
   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar", "size": 5}')
-  output <- dbGetQueryForKeys(mongo, "test_data", '{"foo": "bar"}', '{"foo": 1}')
+  results <- dbGetQueryForKeys(mongo, "test_data", '{"foo": "bar"}', '{"foo": 1}')
   dbDisconnect(mongo)
-  checkEquals(NULL, as.character(output[1,]$size))
+  
+  checkEquals(TRUE, any(names(results) == "foo"))
+  checkEquals(TRUE, any(names(results) != "size"))
 }
 
 test.dbInsertDocument()
