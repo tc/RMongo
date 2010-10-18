@@ -1,12 +1,11 @@
-\name{dbGetQuery-methods}
+\name{dbGetQueryForKeys-methods}
 \docType{methods}
-\alias{dbGetQuery}
-\alias{dbGetQuery-methods}
-\alias{dbGetQuery,RMongo,character,character-method}
-\alias{dbGetQuery,RMongo,character,character,missing,missing-method}
-\alias{dbGetQuery,RMongo,character,character,numeric,numeric-method}
+\alias{dbGetQueryForKeys}
+\alias{dbGetQueryForKeys-methods}
+\alias{dbGetQueryForKeys,RMongo,character,character,character,missing,missing-method}
+\alias{dbGetQueryForKeys,RMongo,character,character,character,numeric,numeric-method}
 
-\title{Performing a MongoDB query}
+\title{Performing a MongoDB query and return only a subset of the keys}
 
 \description{
 Send a json query to mongodb. 
@@ -14,13 +13,14 @@ The output is a data.frame object and will work properly only if the mongoDB col
 }
 
 \usage{
-  dbGetQuery(rmongo.object, collection, query, skip=0, limit=1000) 
+  dbGetQueryForKeys(rmongo.object, collection, query, keys, skip=0, limit=1000) 
 }
 
 \arguments{
   \item{rmongo.object}{The RMongo object.}
   \item{collection}{The name of the collection the query is being performed upon.}
   \item{query}{A JSON string query. See http://www.mongodb.org/display/DOCS/Advanced+Queries for more information on the MongoDB query language.}
+  \item{keys}{Specify a set of keys to return.}
   \item{skip}{Offset the resultset. Can be used with limit to perform pagination.}
   \item{limit}{Limits the resultset size.}
 }
@@ -31,5 +31,6 @@ The output is a data.frame object and will work properly only if the mongoDB col
 \examples{
   mongo <- mongoDbConnect("test")
   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
-  output <- dbGetQuery(mongo, 'test_data', '{"foo": "bar"}')
+  results <- dbGetQueryForKeys(mongo, "test_data", '{"foo":"bar"}', '{"foo": 1}', 0, 100)
 }
+

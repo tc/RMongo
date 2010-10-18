@@ -46,9 +46,17 @@ test.dbGetQuerySorting <- function(){
   checkEquals("newbar", as.character(output[1,]$foo))
 }
 
+test.dbGetQueryForKeys <- function(){
+  mongo <- mongoDbConnect("test")
+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar", "size": 5}')
+  output <- dbGetQueryForKeys(mongo, "test_data", '{"foo": "bar"}', '{"foo": 1}')
+  dbDisconnect(mongo)
+  checkEquals(NULL, as.character(output[1,]$size))
+}
 
 test.dbInsertDocument()
 test.dbGetQuery()
 test.dbGetQuerySkipAndLimit()
 test.dbGetQueryWithEmptyCollection()
 test.dbGetQuerySorting()
+test.dbGetQueryForKeys()
