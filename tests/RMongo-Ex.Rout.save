@@ -64,14 +64,15 @@ Loading required package: rJava
 + }
 > 
 > test.dbGetQueryForKeys <- function(){
-+  mongo <- mongoDbConnect("test")
-+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar", "size": 5}')
-+  output <- dbGetQueryForKeys(mongo, "test_data", '{"foo": "bar"}', '{"foo": 1}')
-+  dbDisconnect(mongo)
-+
-+  checkEquals("bar", as.character(output[1,]$foo))
-+  checkEquals(NULL, as.character(output[1,]$size))
++   mongo <- mongoDbConnect("test")
++   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar", "size": 5}')
++   results <- dbGetQueryForKeys(mongo, "test_data", '{"foo": "bar"}', '{"foo": 1}')
++   dbDisconnect(mongo)
++   
++   checkEquals(TRUE, any(names(results) == "foo"))
++   checkEquals(TRUE, any(names(results) != "size"))
 + }
+> 
 > test.dbInsertDocument()
 [1] TRUE
 > test.dbGetQuery()
@@ -85,5 +86,4 @@ Loading required package: rJava
 > test.dbGetQueryForKeys()
 [1] TRUE
 > 
- 
 
