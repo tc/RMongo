@@ -1,7 +1,7 @@
 Package: RMongo
 Type: Package
 Title: MongoDB Client for R
-Version: 0.0.13
+Version: 0.0.14
 Date: 2010-10-18
 Author: Tommy Chheng
 Maintainer: Tommy Chheng <tommy.chheng@gmail.com>
