@@ -1,5 +1,4 @@
-library('rJava')
-
+#library('rJava')
 #.jinit()
 #.jaddClassPath("inst/java/r-mongo-scala-1.0-SNAPSHOT.jar")
 
