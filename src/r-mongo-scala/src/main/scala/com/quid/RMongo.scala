@@ -91,7 +91,7 @@ class RMongo(dbName: String, host: String, port: Int) {
 }
 
 object RMongo{
-  val SEPARATOR = ";"
+  val SEPARATOR = ""
 
   def toJsonOutput(cursor:DBCursor): String = {
     val results = ListBuffer[String]()

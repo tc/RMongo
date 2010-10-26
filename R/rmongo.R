@@ -33,7 +33,7 @@ setMethod("dbGetQueryForKeys", signature(rmongo.object="RMongo", collection="cha
       data.frame()
     }else{
       con <- textConnection(results)
-      data.frame.results <- read.csv(con, sep=";", stringsAsFactors=FALSE)
+      data.frame.results <- read.csv(con, sep="", stringsAsFactors=FALSE)
       close(con)
 
       data.frame.results
