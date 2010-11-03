@@ -27,6 +27,11 @@ A typical workflow using RMongo:
         output <- dbGetQuery(mongo, "test_data", 
                                     '{"foo": "bar"}')
       }
+      or if you want only a particular set of keys:
+      \preformatted{
+        output <- dbGetQueryForKeys(mongo, "test_data", 
+                                    '{"foo": "bar"}', '{"foo": 1}')
+      }
     \item Close the connection:
       \preformatted{
         dbDisconnect(mongo)
