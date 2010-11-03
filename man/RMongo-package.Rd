@@ -14,7 +14,7 @@ A typical workflow using RMongo:
   \enumerate{
     \item Connect to a mongodb database:
       \preformatted{
-        mongo <- mongoDbConnect("test")
+        mongo <- mongoDbConnect("test", "localhost", 27017)  
       }
     \item Insert a document into a collection:
       This will insert a document of '{"foo":"bar"}' into the "test_data" collection.

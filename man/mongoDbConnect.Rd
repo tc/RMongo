@@ -18,5 +18,5 @@ mongoDbConnect(dbName, host="localhost", port=27017)
 }
 
 \examples{
-  mongo <- mongoDbConnect("test")
+  mongo <- mongoDbConnect("test", "localhost", 27017)
 }
