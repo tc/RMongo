@@ -18,7 +18,7 @@ class RMongo(dbName: String, host: String, port: Int) {
   val m = new Mongo(host, port)
   val db = m.getDB(dbName)
 
-  def this(dbName: String) = this (dbName, "localhost", 27017)
+  def this(dbName: String) = this (dbName, "127.0.0.1", 27017)
 
   def dbShowCollections():Array[String] = {
     val names = db.getCollectionNames().map(name => name)
