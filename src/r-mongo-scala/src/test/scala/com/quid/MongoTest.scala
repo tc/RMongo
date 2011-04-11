@@ -95,6 +95,15 @@ class MongoTest{
   }
 
   @Test
+  def testDbGetQueryRegex{
+    val rMongo = new RMongo("test")
+    val results = rMongo.dbGetQuery("test_data", """ {"foo": {"$regex": "bar", "$options": "i"}} """)
+    val record = parsedFirstRecordFrom(results)
+
+    Assert.assertEquals("\"bar\"", record.getOrElse("foo", ""))
+  }
+
+  @Test
   def testDbGetQueryWithEmptyCollection{
     val rMongo = new RMongo("test")
     val results = rMongo.dbGetQuery("empty_collection", "{}")
