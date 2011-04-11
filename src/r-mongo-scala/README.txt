@@ -2,6 +2,7 @@ r-mongo-scala
 ----
 For use with the RMongo r package.
 run mvn install to build jar to RMongo inst directory.
+and then continue with the instructions in the root README file
 
 # ---------------------------------------------------------------------------
 # Copyright 2010, Quid, Inc.

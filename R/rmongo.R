@@ -4,7 +4,7 @@
 
 setClass("RMongo", representation(javaMongo = "jobjRef"))
 
-mongoDbConnect <- function(dbName, host="localhost", port=27017){
+mongoDbConnect <- function(dbName, host="127.0.0.1", port=27017){
   rmongo <- new("RMongo", javaMongo = .jnew("com/quid/RMongo", dbName, host, as.integer(port)))
   rmongo
 }
