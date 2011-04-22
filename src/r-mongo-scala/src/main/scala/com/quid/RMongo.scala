@@ -20,6 +20,10 @@ class RMongo(dbName: String, host: String, port: Int) {
 
   def this(dbName: String) = this (dbName, "127.0.0.1", 27017)
 
+  def dbAuthenticate(username:String, password:String):Boolean = {
+    db.authenticate(username, password.toCharArray)
+  }
+
   def dbShowCollections():Array[String] = {
     val names = db.getCollectionNames().map(name => name)
 

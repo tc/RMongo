@@ -9,6 +9,14 @@ mongoDbConnect <- function(dbName, host="127.0.0.1", port=27017){
   rmongo
 }
 
+setGeneric("dbAuthenticate", function(rmongo.object, username, password) standardGeneric("dbAuthenticate"))
+setMethod("dbAuthenticate", signature(rmongo.object="RMongo", username="character", password="character"),
+   function(rmongo.object, username, password){
+    results <- .jcall(rmongo.object@javaMongo, "Z", "dbAuthenticate", username, password)
+    results
+  }
+)
+
 setGeneric("dbShowCollections", function(rmongo.object) standardGeneric("dbShowCollections"))
 setMethod("dbShowCollections", signature(rmongo.object="RMongo"),
    function(rmongo.object){
