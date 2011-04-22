@@ -45,7 +45,8 @@ A typical workflow using RMongo:
 }
 
 \author{
-Tommy Chheng <tommy@quid.com>
+Tommy Chheng <tommy.chheng@gmail.com> 
+http://tommy.chheng.com
 }
 \keyword{mongodb}
 \keyword{mongo}

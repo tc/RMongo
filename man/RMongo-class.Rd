@@ -8,6 +8,7 @@ Contains the mongodb connection information. See mongoDbConnect for creating a R
 }
 \section{Methods}{
   \describe{
+    \item{dbAuthenticate}{}
     \item{dbGetQuery}{}
     \item{dbGetQueryForKeys}{}
     \item{dbInsertDocument}{}
