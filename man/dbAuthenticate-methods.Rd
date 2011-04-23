@@ -2,7 +2,7 @@
 \docType{methods}
 \alias{dbAuthenticate}
 \alias{dbAuthenticate-methods}
-\alias{dbAuthenticate,RMongo-method}
+\alias{dbAuthenticate,RMongo,character,character-method}
 
 \title{Authenticate with a username/password.}
 
