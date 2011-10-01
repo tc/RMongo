@@ -39,9 +39,9 @@ setMethod("dbGetQueryForKeys", signature(rmongo.object="RMongo", collection="cha
     results <- .jcall(rmongo.object@javaMongo, "S", "dbGetQuery", collection, query, keys, skip, limit)
     if(results == ""){
       data.frame()
-    }else{
+    }else{      
       con <- textConnection(results)
-      data.frame.results <- read.csv(con, sep="", stringsAsFactors=FALSE)
+      data.frame.results <- read.csv(con, sep="", stringsAsFactors=FALSE, quote="")
       close(con)
 
       data.frame.results
