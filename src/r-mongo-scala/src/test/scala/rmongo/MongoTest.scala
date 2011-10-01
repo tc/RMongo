@@ -1,4 +1,4 @@
-package com.quid
+package rmongo
 
 import com.mongodb.util.JSON
 import org.junit.{Before, Assert, Test}
@@ -13,20 +13,17 @@ import com.mongodb.{BasicDBList, Mongo, DB, DBObject}
  *
  */
 class MongoTest{
+  val m = new Mongo()
+  val db = m.getDB("test")
+  val collection = db.getCollection("test_data")
+
   def clearTestDB{
-    val m = new Mongo()
-    val db = m.getDB("test")
-    val collection = db.getCollection("test_data")
     collection.drop() //make sure the collection is empty
   }
 
   @Before
   def insertDocs{
     clearTestDB
-
-    val m = new Mongo()
-    val db = m.getDB("test")
-    val collection = db.getCollection("test_data")
 
     List(""" {"foo": "bar", "size": 5} """,
          """ {"foo": "n1", "size": 10} """).foreach{ doc =>
@@ -84,10 +81,23 @@ class MongoTest{
   }
 
   @Test
+  def testDbGetQueryInner{
+    List(""" {"foo": "n1", "inner-parent": {"inner": 5} } """).foreach{ doc =>
+        val docObject = JSON.parse(doc).asInstanceOf[DBObject]
+        collection.insert(docObject)
+    }
+
+    val rMongo = new RMongo("test")
+    val results = rMongo.dbGetQuery("test_data", """ {"inner-parent": {"inner": 5}} """)
+    val record = parsedFirstRecordFrom(results)
+
+    Assert.assertEquals("""{ "inner" : 5}""", record.getOrElse("inner-parent", ""))
+  }
+
+  @Test
   def testDbGetQueryWithKeys{
     val rMongo = new RMongo("test")
     val results = rMongo.dbGetQuery("test_data", """ {} """, """ {"foo": 1} """, 0, 100)
-    println(results)
     val record = parsedFirstRecordFrom(results)
 
     Assert.assertEquals("\"bar\"", record.getOrElse("foo", ""))
@@ -145,8 +155,6 @@ class MongoTest{
     val cursor = collection.find(queryObject)
 
     val results = RMongo.toCsvOutput(cursor)
-
-    println(results)
   }
 
   def parsedFirstRecordFrom(results: String):Map[String, Any] = {
