@@ -5,7 +5,7 @@ run mvn install to build jar to RMongo inst directory.
 and then continue with the instructions in the root README file
 
 # ---------------------------------------------------------------------------
-# Copyright 2010, Quid, Inc.
+# Copyright 2010, Tommy Chheng.
 #
 # r-mongo-scala is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

@@ -1,4 +1,4 @@
-package com.quid
+package rmongo
 
 import com.mongodb.util.JSON
 import collection.mutable.ListBuffer
@@ -130,8 +130,10 @@ object RMongo{
     keys.map{k =>
       val value = item.get(k)
 
-      if(value != null)
+      if(value != null && !value.toString.startsWith("{"))
         "\"" + value.toString.replaceAll("\"", "\\\"") + "\""
+      else if(value.toString.startsWith("{"))
+        value.toString.replaceAll("\"", "\\\"")
       else
         "" }.mkString(SEPARATOR)
   }
