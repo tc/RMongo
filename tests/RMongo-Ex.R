@@ -51,9 +51,18 @@ test.dbGetQueryForKeys <- function(){
   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar", "size": 5}')
   results <- dbGetQueryForKeys(mongo, "test_data", '{"foo": "bar"}', '{"foo": 1}')
   dbDisconnect(mongo)
-  
+
   checkEquals(TRUE, any(names(results) == "foo"))
   checkEquals(TRUE, any(names(results) != "size"))
+}
+
+test.dbInsertStructured <- function(){
+  mongo <- mongoDbConnect("test")  
+  output <- dbInsertDocument(mongo, "test_data_s", '{"foo": "bar", "structured":  {"foo": "baz"}}')
+  output <- dbGetQuery(mongo, "test_data_s", '{}')
+
+  dbDisconnect(mongo)
+  checkEquals("{ \"foo\" : \"baz\"}", as.character(output[1,]$structured))
 }
 
 test.dbInsertDocument()
@@ -62,3 +71,4 @@ test.dbGetQuerySkipAndLimit()
 test.dbGetQueryWithEmptyCollection()
 test.dbGetQuerySorting()
 test.dbGetQueryForKeys()
+test.dbInsertStructured()

@@ -77,7 +77,7 @@ class MongoTest{
     val results = rMongo.dbGetQuery("test_data", """ {} """)
     val record = parsedFirstRecordFrom(results)
 
-    Assert.assertEquals("\"bar\"", record.getOrElse("foo", ""))
+    Assert.assertEquals("bar", record.getOrElse("foo", ""))
   }
 
   @Test
@@ -100,7 +100,7 @@ class MongoTest{
     val results = rMongo.dbGetQuery("test_data", """ {} """, """ {"foo": 1} """, 0, 100)
     val record = parsedFirstRecordFrom(results)
 
-    Assert.assertEquals("\"bar\"", record.getOrElse("foo", ""))
+    Assert.assertEquals("bar", record.getOrElse("foo", ""))
     Assert.assertEquals("", record.getOrElse("size", ""))
   }
 
@@ -110,7 +110,7 @@ class MongoTest{
     val results = rMongo.dbGetQuery("test_data", """ {"foo": {"$regex": "bar", "$options": "i"}} """)
     val record = parsedFirstRecordFrom(results)
 
-    Assert.assertEquals("\"bar\"", record.getOrElse("foo", ""))
+    Assert.assertEquals("bar", record.getOrElse("foo", ""))
   }
 
   @Test
@@ -128,7 +128,7 @@ class MongoTest{
       """ { "$query": {}, "$orderby": { "foo": -1 } }} """)
     val record = parsedFirstRecordFrom(results)
 
-    Assert.assertEquals("\"n1\"", record.getOrElse("foo", ""))
+    Assert.assertEquals("n1", record.getOrElse("foo", ""))
   }
 
   @Test
@@ -137,12 +137,12 @@ class MongoTest{
     val page1 = rMongo.dbGetQuery("test_data", """ {} """, 0, 1)
     val record1 = parsedFirstRecordFrom(page1)
 
-    Assert.assertEquals("\"bar\"", record1.getOrElse("foo", ""))
+    Assert.assertEquals("bar", record1.getOrElse("foo", ""))
 
     val page2 = rMongo.dbGetQuery("test_data", """ {} """, 1, 1)
     val record2 = parsedFirstRecordFrom(page2)
 
-    Assert.assertEquals("\"n1\"", record2.getOrElse("foo", ""))
+    Assert.assertEquals("n1", record2.getOrElse("foo", ""))
   }
 
   @Test

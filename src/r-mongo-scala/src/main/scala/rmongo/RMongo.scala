@@ -130,9 +130,7 @@ object RMongo{
     keys.map{k =>
       val value = item.get(k)
 
-      if(value != null && !value.toString.startsWith("{"))
-        "\"" + value.toString.replaceAll("\"", "\\\"") + "\""
-      else if(value.toString.startsWith("{"))
+      if(value != null)
         value.toString.replaceAll("\"", "\\\"")
       else
         "" }.mkString(SEPARATOR)
