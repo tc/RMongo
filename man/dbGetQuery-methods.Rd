@@ -30,6 +30,10 @@ The output is a data.frame object and will work properly only if the mongoDB col
 }
 \examples{
   mongo <- mongoDbConnect("test")
-  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')  
   output <- dbGetQuery(mongo, 'test_data', '{"foo": "bar"}')
+  print(output)
+  
+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar with spaces"}')
+  output <- dbGetQuery(mongo, 'test_data', '{"foo": { "$regex": "bar*", "$options": "i"} }')
 }

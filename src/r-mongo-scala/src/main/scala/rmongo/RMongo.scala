@@ -72,7 +72,7 @@ class RMongo(dbName: String, host: String, port: Int) {
     dbGetQuery(collectionName, query, keys, skipNum.toInt, limitNum.toInt)
   }
 
-  def dbGetQuery(collectionName: String, query: String, keys:String,
+  def dbGetQuery(collectionName: String, query: String, keys: String,
                          skipNum:Int, limitNum:Int): String = {
     val dbCollection = db.getCollection(collectionName)
 
@@ -83,7 +83,26 @@ class RMongo(dbName: String, host: String, port: Int) {
     val results = RMongo.toCsvOutput(cursor)
 
     results
- }
+  }
+  
+  def dbGetDistinct(collectionName: String, key: String): String = {
+    dbGetDistinct(collectionName, key, "")
+  }
+  
+  def dbGetDistinct(collectionName: String, key: String, query: String): String = {
+    val dbCollection = db.getCollection(collectionName)
+
+    val queryObject = JSON.parse(query).asInstanceOf[DBObject]
+    val distinctResults = dbCollection.distinct(key, queryObject).iterator
+    val results = ListBuffer[String]()
+
+    while (distinctResults.hasNext) {
+      val item = distinctResults.next
+      results.append("\"" + item.toString.replaceAll("\n", "\\n") + "\"")
+    }
+
+    results.mkString("\n")
+  }
 
   def close() {
     m.close()
