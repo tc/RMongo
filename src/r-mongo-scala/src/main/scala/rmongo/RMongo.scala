@@ -4,6 +4,8 @@ import com.mongodb.util.JSON
 import collection.mutable.ListBuffer
 import collection.JavaConversions._
 import com.mongodb._
+import java.util.HashSet
+import java.util.Iterator
 
 /**
  *
@@ -72,7 +74,7 @@ class RMongo(dbName: String, host: String, port: Int) {
     dbGetQuery(collectionName, query, keys, skipNum.toInt, limitNum.toInt)
   }
 
-  def dbGetQuery(collectionName: String, query: String, keys:String,
+  def dbGetQuery(collectionName: String, query: String, keys: String,
                          skipNum:Int, limitNum:Int): String = {
     val dbCollection = db.getCollection(collectionName)
 
@@ -83,7 +85,26 @@ class RMongo(dbName: String, host: String, port: Int) {
     val results = RMongo.toCsvOutput(cursor)
 
     results
- }
+  }
+  
+  def dbGetDistinct(collectionName: String, key: String): String = {
+    dbGetDistinct(collectionName, key, "")
+  }
+  
+  def dbGetDistinct(collectionName: String, key: String, query: String): String = {
+    val dbCollection = db.getCollection(collectionName)
+
+    val queryObject = JSON.parse(query).asInstanceOf[DBObject]
+    val distinctResults = dbCollection.distinct(key, queryObject).iterator
+    val results = ListBuffer[String]()
+
+    while (distinctResults.hasNext) {
+      val item = distinctResults.next
+      results.append("\"" + item.toString.replaceAll("\n", "\\n") + "\"")
+    }
+
+    results.mkString("\n")
+  }
 
   def close() {
     m.close()
@@ -108,18 +129,32 @@ object RMongo{
   }
 
   def toCsvOutput(cursor: DBCursor): String = {
+    
     if(cursor.hasNext == false) return ""
-
+   
     val results = ListBuffer[String]()
-    var first = true
-    val firstRecord:DBObject = cursor.next
-
-    val keys = firstRecord.keySet.toArray(new Array[String](firstRecord.keySet.size))
-    results.append(keys.mkString(SEPARATOR))
-    results.append(csvRowFromDBObject(keys, cursor.curr))     //append the first row
-
-    while (cursor.hasNext) {
-      results.append(csvRowFromDBObject(keys, cursor.next))
+    
+    if (cursor.getKeysWanted != null && cursor.getKeysWanted.keySet.size != 0) {
+        /* If fields were specified (save time) */
+        val keysWanted = cursor.getKeysWanted
+        keysWanted.put("_id", 1)
+        val keys = keysWanted.keySet.toArray(new Array[String](keysWanted.keySet.size))
+        results.append(keys.mkString(SEPARATOR)) 
+        while (cursor.hasNext) {
+            results.append(csvRowFromDBObject(keys, cursor.next))
+        }
+    } else {
+        /* Try to find set of desired keys by scanning cursor */
+        val keysWanted = new HashSet[String]()
+        val ccursor:DBCursor = cursor.copy
+        while(ccursor.hasNext == true) {
+            keysWanted.addAll(ccursor.next.keySet)
+        }
+        val keys = keysWanted.toArray(new Array[String](keysWanted.size))
+        results.append(keys.mkString(SEPARATOR)) 
+        while (cursor.hasNext) {
+            results.append(csvRowFromDBObject(keys, cursor.next))
+        }
     }
 
     results.mkString("\n")

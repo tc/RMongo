@@ -12,6 +12,8 @@ Contains the mongodb connection information. See mongoDbConnect for creating a R
     \item{dbGetQuery}{}
     \item{dbGetQueryForKeys}{}
     \item{dbInsertDocument}{}
+    \item{dbRemoveQuery}{}
+    \item{dbGetDistinct}{}
     \item{dbDisconnect}{}
   }
 }
