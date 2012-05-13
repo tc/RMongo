@@ -166,4 +166,12 @@ class MongoTest{
 
     keys.zip(entry).toMap
   }
+  
+  @Test
+  def testDbGetDistinct{
+     val rMongo = new RMongo("test")
+     val results = rMongo.dbGetDistinct("test_data", "size")
+     
+     Assert.assertEquals("\"5\"\n\"10\"", results)
+  }
 }

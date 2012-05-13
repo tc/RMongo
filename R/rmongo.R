@@ -75,3 +75,32 @@ setMethod("dbDisconnect", signature(rmongo.object="RMongo"),
   }
 )
 
+setGeneric("dbRemoveQuery", function(rmongo.object, collection, query) standardGeneric("dbRemoveQuery"))
+setMethod("dbRemoveQuery", signature(rmongo.object="RMongo", collection="character", query="character"),
+  function(rmongo.object, collection, query){
+    results <- .jcall(rmongo.object@javaMongo, "S", "dbRemoveQuery", collection, query)
+    results
+  }
+)
+
+setGeneric("dbGetDistinct", function(rmongo.object, collection, key, query="") standardGeneric("dbGetDistinct"))
+setMethod("dbGetDistinct", signature(rmongo.object="RMongo", collection="character", key="character", query="missing"),
+  function(rmongo.object, collection, key, query=""){
+    dbGetDistinct(rmongo.object, collection, key, "")
+  }
+)
+
+setMethod("dbGetDistinct", signature(rmongo.object="RMongo", collection="character", key="character", query="character"),
+  function(rmongo.object, collection, key, query){
+    results <- .jcall(rmongo.object@javaMongo, "S", "dbGetDistinct", collection, key, query)
+    if(results == ""){
+      vector(mode="character")
+    }else{      
+      con <- textConnection(results)
+      data.frame.results <- read.table(con, sep="\n", stringsAsFactors=FALSE, quote="\"", header=FALSE)
+      close(con)
+
+      as.vector(t(data.frame.results))
+    }
+  }
+)
