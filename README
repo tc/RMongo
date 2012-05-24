@@ -21,6 +21,13 @@ Upload to CRAN:
 ftp ftp://CRAN.R-project.org/incoming/
 put RMongo*.tar.gz
 
+
+CHANGELOG
+---
+0.0.22
+Fixed a bug in toCsvOutput which caused R data frames to be restricted to the fields of the first record found by a query. Thanks @liuq
+Added dbRemoveQuery, dbGetDistinct methods.  Thanks @liuq
+
 ---
 # ---------------------------------------------------------------------------
 # Copyright 2010, Tommy Chheng.
