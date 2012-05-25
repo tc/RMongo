@@ -17,10 +17,11 @@ R CMD build RMongo
 Install:
 R CMD install RMongo*.tar.gz
 
-Upload to CRAN:
+Publish to CRAN:
 ftp ftp://CRAN.R-project.org/incoming/
 put RMongo*.tar.gz
 
+Email CRAN@R-project.org notifying a new release has been made.
 
 CHANGELOG
 ---
