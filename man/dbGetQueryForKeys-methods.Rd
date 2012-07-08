@@ -14,7 +14,7 @@ The output is a data.frame object and will work properly only if the mongoDB col
 }
 
 \usage{
-  dbGetQueryForKeys(rmongo.object, collection, query, keys. skip=0, limit=1000) 
+  dbGetQueryForKeys(rmongo.object, collection, query, keys, skip=0, limit=1000) 
 }
 
 \arguments{
