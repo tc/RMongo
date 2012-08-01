@@ -27,7 +27,7 @@ CHANGELOG
 ---
 0.0.22
 Fixed a bug in toCsvOutput which caused R data frames to be restricted to the fields of the first record found by a query. Thanks @tunnuz
-Added dbRemoveQuery, dbGetDistinct methods.  Thanks @tunnuz
+Added dbRemoveQuery, dbGetDistinct methods.  Thanks @liuq
 
 ---
 # ---------------------------------------------------------------------------
