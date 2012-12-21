@@ -86,7 +86,7 @@ class RMongo(dbName: String, host: String, port: Int) {
 
     results
   }
-  
+
   def dbGetDistinct(collectionName: String, key: String): String = {
     dbGetDistinct(collectionName, key, "")
   }
@@ -103,6 +103,34 @@ class RMongo(dbName: String, host: String, port: Int) {
       results.append("\"" + item.toString.replaceAll("\n", "\\n") + "\"")
     }
 
+    results.mkString("\n")
+  }
+
+  def dbAggregate(collectionName: String, queries: String*): String = {
+    val dbCollection = db.getCollection(collectionName)
+    val queryArray = new Array[DBObject](queries.length)
+    for ( i <- 0 to (queries.length - 1) ) {
+        val query = queries(i)
+        queryArray(i) = JSON.parse(query).asInstanceOf[DBObject]
+    }
+    var aggregateIterator = dbCollection.aggregate(queryArray(0)).results.iterator
+    if (queryArray.length == 2) {
+        aggregateIterator = dbCollection.aggregate(queryArray(0), queryArray(1)).results.iterator
+    } else if (queryArray.length == 3) {
+        aggregateIterator = dbCollection.aggregate(queryArray(0), queryArray(1), queryArray(2)).results.iterator
+    } else if (queryArray.length == 4) {
+        aggregateIterator = dbCollection.aggregate(queryArray(0), queryArray(1), queryArray(2), queryArray(3)).results.iterator
+    } else if (queryArray.length == 5) {
+        aggregateIterator = dbCollection.aggregate(queryArray(0), queryArray(1), queryArray(2), queryArray(3), queryArray(4)).results.iterator
+    } else if (queryArray.length == 6) {
+        aggregateIterator = dbCollection.aggregate(queryArray(0), queryArray(1), queryArray(2), queryArray(3), queryArray(4), queryArray(5)).results.iterator
+    }
+        
+    val results = ListBuffer[String]()
+    while (aggregateIterator.hasNext) {
+      val item = aggregateIterator.next
+      results.append("\"" + item.toString.replaceAll("\n", "\\n") + "\"")
+    }
     results.mkString("\n")
   }
 
