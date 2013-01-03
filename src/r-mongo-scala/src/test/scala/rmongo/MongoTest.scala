@@ -174,4 +174,15 @@ class MongoTest{
      
      Assert.assertEquals("\"5\"\n\"10\"", results)
   }
+
+  @Test
+  def testDbAggregate{
+     val rMongo = new RMongo("test")
+     val results = rMongo.dbAggregate("test_data", 
+       """ { "$project" : { "baz" : "$foo" } } """,
+       """ { "$group" : { "_id" : "$baz" } } """,
+       """ { "$match" : { "_id" : "bar" } } """)
+     
+     Assert.assertEquals("\"{ \"_id\" : \"bar\"}\"", results)
+  }
 }
