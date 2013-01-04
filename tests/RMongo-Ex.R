@@ -101,12 +101,16 @@ test.dbAggregate <- function(){
   
   output <- dbAggregate(mongo, "test_data", c(' { "$project" : { "baz" : "$foo" } } ',
                                               ' { "$group" : { "_id" : "$baz" } } ',
-                                              ' { "$match" : { "_id" : "bar" } } '))
+                                              #' { "$group" : { "_id" : "$baz" } } '))
+                                               ' { "$match" : { "_id" : "bar" } } '))
   dbRemoveQuery(mongo, "test_data", '{}')
   dbDisconnect(mongo)
   
-  print(output)
-  checkEquals("bar", as.character(output[1]))
+  # print(length(output))
+  print(as.character(output[1]))
+
+  checkEquals("\"{ \"_id\" : \"bar\"}\"", as.character(output[1]))
+  # checkEquals("bar", as.character(output[1]))
 }
 
 test.dbInsertDocument()
