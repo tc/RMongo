@@ -178,10 +178,11 @@ class MongoTest{
   @Test
   def testDbAggregate{
      val rMongo = new RMongo("test")
-     val results = rMongo.dbAggregate("test_data", 
+     var pipeline = Array( 
        """ { "$project" : { "baz" : "$foo" } } """,
        """ { "$group" : { "_id" : "$baz" } } """,
        """ { "$match" : { "_id" : "bar" } } """)
+     val results = rMongo.dbAggregate("test_data", pipeline)
      
      Assert.assertEquals("\"{ \"_id\" : \"bar\"}\"", results)
   }
