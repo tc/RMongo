@@ -94,6 +94,21 @@ test.dbGetDistinct <- function(){
   checkEquals("baz and bar", as.character(output[2]))
 }
 
+test.dbAggregate <- function(){
+  mongo <- mongoDbConnect("test")
+  dbInsertDocument(mongo, "test_data", '{"foo": "bar", "size": 5 }')
+  dbInsertDocument(mongo, "test_data", '{"foo": "nl", "size": 10 }')
+  
+  output <- dbAggregate(mongo, "test_data", c(' { "$project" : { "baz" : "$foo" } } ',
+                                              ' { "$group" : { "_id" : "$baz" } } ',
+                                              ' { "$match" : { "_id" : "bar" } } '))
+  dbRemoveQuery(mongo, "test_data", '{}')
+  dbDisconnect(mongo)
+  
+  print(output)
+  checkEquals("bar", as.character(output[1]))
+}
+
 test.dbInsertDocument()
 test.dbRemoveQuery()
 test.dbGetQuery()
@@ -103,3 +118,4 @@ test.dbGetQuerySorting()
 test.dbGetQueryForKeys()
 test.dbInsertStructured()
 test.dbGetDistinct()
+test.dbAggregate()
