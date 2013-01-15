@@ -107,7 +107,8 @@ class RMongo(dbName: String, host: String, port: Int) {
     results.mkString("\n")
   }
 
-  def dbAggregate(collectionName: String, queries: Array[String]): String = {
+  //def dbAggregate(collectionName: String, queries: Array[String]): String = {
+  def dbAggregate(collectionName: String, queries: Array[String]):Array[String] = {
     val dbCollection = db.getCollection(collectionName)
     val queryArray = new Array[DBObject](queries.length)
     for ( i <- 0 to (queries.length - 1) ) {
@@ -119,9 +120,11 @@ class RMongo(dbName: String, host: String, port: Int) {
     val results = ListBuffer[String]()
     while (aggregateIterator.hasNext) {
       val item = aggregateIterator.next
-      results.append("\"" + item.toString.replaceAll("\n", "\\n") + "\"")
+      // results.append("\"" + item.toString.replaceAll("\n", "\\n") + "\"")
+      results.append(item.toString)
     }
-    results.mkString("\n")
+    //results.mkString("\n")
+    results.toArray
   }
 
   def close() {

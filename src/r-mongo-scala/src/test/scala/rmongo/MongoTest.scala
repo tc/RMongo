@@ -184,6 +184,7 @@ class MongoTest{
        """ { "$match" : { "_id" : "bar" } } """)
      val results = rMongo.dbAggregate("test_data", pipeline)
      
-     Assert.assertEquals("\"{ \"_id\" : \"bar\"}\"", results)
+     //Assert.assertEquals("\"{ \"_id\" : \"bar\"}\"", results)
+     assert(results.contains("{ \"_id\" : \"bar\"}"))
   }
 }
