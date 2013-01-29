@@ -6,6 +6,7 @@ import collection.JavaConversions._
 import com.mongodb._
 import java.util.HashSet
 import java.util.Iterator
+import java.util.Arrays
 
 /**
  *
@@ -86,7 +87,7 @@ class RMongo(dbName: String, host: String, port: Int) {
 
     results
   }
-  
+
   def dbGetDistinct(collectionName: String, key: String): String = {
     dbGetDistinct(collectionName, key, "")
   }
@@ -104,6 +105,26 @@ class RMongo(dbName: String, host: String, port: Int) {
     }
 
     results.mkString("\n")
+  }
+
+  //def dbAggregate(collectionName: String, queries: Array[String]): String = {
+  def dbAggregate(collectionName: String, queries: Array[String]):Array[String] = {
+    val dbCollection = db.getCollection(collectionName)
+    val queryArray = new Array[DBObject](queries.length)
+    for ( i <- 0 to (queries.length - 1) ) {
+        val query = queries(i)
+        queryArray(i) = JSON.parse(query).asInstanceOf[DBObject]
+    }
+    var aggregateIterator = dbCollection.aggregate(queryArray(0), Arrays.copyOfRange(queryArray, 1, queryArray.length):_*).results.iterator
+        
+    val results = ListBuffer[String]()
+    while (aggregateIterator.hasNext) {
+      val item = aggregateIterator.next
+      // results.append("\"" + item.toString.replaceAll("\n", "\\n") + "\"")
+      results.append(item.toString)
+    }
+    //results.mkString("\n")
+    results.toArray
   }
 
   def close() {

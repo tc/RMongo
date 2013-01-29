@@ -104,3 +104,11 @@ setMethod("dbGetDistinct", signature(rmongo.object="RMongo", collection="charact
     }
   }
 )
+
+setGeneric("dbAggregate", function(rmongo.object, collection, query="") standardGeneric("dbAggregate"))
+setMethod("dbAggregate", signature(rmongo.object="RMongo", collection="character", query="character"),
+  function(rmongo.object, collection, query){
+    results <- .jcall(rmongo.object@javaMongo, "[S", "dbAggregate", collection, .jarray(query))
+    results
+  }
+)
