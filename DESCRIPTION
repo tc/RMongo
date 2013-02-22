@@ -1,8 +1,8 @@
 Package: RMongo
 Type: Package
 Title: MongoDB Client for R
-Version: 0.0.22
-Date: 2012-05-22
+Version: 0.0.23
+Date: 2013-02-22
 Author: Tommy Chheng
 Maintainer: Tommy Chheng <tommy.chheng@gmail.com>
 Description: MongoDB Database interface for R. The interface is provided via Java calls to the mongo-java-driver.
