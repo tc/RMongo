@@ -25,6 +25,9 @@ Email CRAN@R-project.org notifying a new release has been made.
 
 CHANGELOG
 ---
+0.0.24
+Recompiled to support >R 3. Updated mongo-java-driver to 2.11.2
+
 0.0.23
 Added aggregation framework support. thanks @jayjacobs
 
