@@ -9,12 +9,26 @@ mongoDbConnect <- function(dbName, host="127.0.0.1", port=27017){
   rmongo
 }
 
+mongoDbReplicaSetConnect <- function(dbName, hosts="127.0.0.1:27017"){
+  rmongo <- new("RMongo", javaMongo = .jnew("rmongo/RMongo", dbName, hosts, FALSE))
+  dbDisconnect(rmongo)
+  rmongo <- new("RMongo", javaMongo = .jnew("rmongo/RMongo", dbName, hosts, TRUE))
+  rmongo
+}
+
 setGeneric("dbAuthenticate", function(rmongo.object, username, password) standardGeneric("dbAuthenticate"))
 setMethod("dbAuthenticate", signature(rmongo.object="RMongo", username="character", password="character"),
    function(rmongo.object, username, password){
     results <- .jcall(rmongo.object@javaMongo, "Z", "dbAuthenticate", username, password)
     results
   }
+)
+
+setGeneric("dbSetWriteConcern", function(rmongo.object, w, wtimeout, fsync, j) standardGeneric("dbSetWriteConcern"))
+setMethod("dbSetWriteConcern", signature(rmongo.object="RMongo", w="numeric", wtimeout="numeric", fsync="logical", j="logical"),
+   function(rmongo.object, w, wtimeout, fsync, j){
+    .jcall(rmongo.object@javaMongo, "V", "dbSetWriteConcern", as.integer(w), as.integer(wtimeout), fsync, j)
+   }
 )
 
 setGeneric("dbShowCollections", function(rmongo.object) standardGeneric("dbShowCollections"))
