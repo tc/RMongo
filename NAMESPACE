@@ -1,4 +1,4 @@
 import('rJava')
-export('mongoDbConnect')
+export('mongoDbConnect', 'mongoDbReplicaSetConnect')
 exportClass('RMongo')
-exportMethods('dbInsertDocument', 'dbAuthenticate', 'dbShowCollections', 'dbGetQuery', 'dbGetQueryForKeys', 'dbDisconnect', 'dbRemoveQuery', 'dbGetDistinct', 'dbAggregate')
+exportMethods('dbInsertDocument', 'dbAuthenticate', 'dbSetWriteConcern', 'dbShowCollections', 'dbGetQuery', 'dbGetQueryForKeys', 'dbDisconnect', 'dbRemoveQuery', 'dbGetDistinct', 'dbAggregate')

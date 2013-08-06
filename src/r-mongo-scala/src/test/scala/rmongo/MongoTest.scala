@@ -40,6 +40,21 @@ class MongoTest{
 
     assert(rMongo.dbShowCollections().contains(collectionName))
   }
+  
+  @Test
+  def testDbReplicaSetInsertDocument{
+    clearTestDB
+    
+    val rMongo = new RMongo("test", "localhost", true)
+    val doc = """ {"_id": "foo", "foo": "bar", "size": 5} """
+
+    val response = rMongo.dbInsertDocument("test_data", doc)
+    Assert.assertEquals("ok", response)
+
+    val duplicateResponse = rMongo.dbInsertDocument("test_data", doc)
+
+    Assert.assertEquals("E11000 duplicate key error index: test.test_data.$_id_  dup key: { : \"foo\" }", duplicateResponse)
+  }
 
   @Test
   def testDbInsertDocument{
