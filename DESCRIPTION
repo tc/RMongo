@@ -8,6 +8,6 @@ Maintainer: Tommy Chheng <tommy.chheng@gmail.com>
 Description: MongoDB Database interface for R. The interface is provided via Java calls to the mongo-java-driver.
 License: GPL-3
 LazyLoad: yes
-Depends: R(>= 3.0.0), rJava, methods, RUnit
+Depends: R(>= 2.14.1), rJava, methods, RUnit
 SystemRequirements: Java (>= 1.6), MongoDB (>= 1.6)
 URL: http://github.com/tc/RMongo
