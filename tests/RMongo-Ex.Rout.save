@@ -1,14 +1,11 @@
 
-R version 2.13.1 (2011-07-08)
-Copyright (C) 2011 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
-Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+R version 3.0.1 (2013-05-16) -- "Good Sport"
+Copyright (C) 2013 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin10.8.0 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
 
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
@@ -18,158 +15,144 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
-> pkgname <- "RMongo"
-> source(file.path(R.home("share"), "R", "examples-header.R"))
-> options(warn = 1)
-> library('RMongo')
+> library("RUnit")
+> library("RMongo")
 Loading required package: rJava
-Loading required package: RUnit
+> library('rJava')
 > 
-> assign(".oldSearch", search(), pos = 'CheckExEnv')
-> cleanEx()
-> nameEx("dbAuthenticate-methods")
-> ### * dbAuthenticate-methods
+> test.dbInsertDocument <- function(){
++   mongo <- mongoDbConnect("test")
++   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
++   dbDisconnect(mongo)
++ 
++   checkEquals("ok", output)
++ }
 > 
-> flush(stderr()); flush(stdout())
+> test.dbRemoveQuery <- function(){
++   mongo <- mongoDbConnect("test")
++   output <- dbRemoveQuery(mongo, "test_data", '{}')
++   dbDisconnect(mongo)
++ 
++   checkEquals("ok", output)  
++ }
 > 
-> ### Name: dbAuthenticate-methods
-> ### Title: Authenticate with a username/password.
-> ### Aliases: dbAuthenticate dbAuthenticate-methods
-> ###   dbAuthenticate,RMongo,character,character-method
+> test.dbGetQuery <- function(){
++   mongo <- mongoDbConnect("test")
++   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
++   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar with spaces"}')
++   output <- dbGetQuery(mongo, 'test_data', '{"foo": { "$regex": "bar*", "$options": "i"} }')
++   dbRemoveQuery(mongo, "test_data", '{}')
++   dbDisconnect(mongo)
++   checkEquals("bar", as.character(output[1,]$foo))
++   checkEquals("bar with spaces", as.character(output[2,]$foo))
++ }
 > 
-> ### ** Examples
+> test.dbGetQuerySkipAndLimit <- function(){
++   mongo <- mongoDbConnect("test")
++   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
++   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
++   output <- dbGetQuery(mongo, "test_data", '{"foo": "bar"}', 0, 1)
++   dbRemoveQuery(mongo, "test_data", '{}')
++   dbDisconnect(mongo)
++   checkEquals(1, length(output[output$foo == 'bar', 1]))
++ }
 > 
->   mongo <- mongoDbConnect("test")
->   username = ""
->   password = ""
->   authenticated <- dbAuthenticate(mongo, username, password)
->   dbDisconnect(mongo)
+> test.dbGetQueryWithEmptyCollection <- function(){
++   mongo <- mongoDbConnect('test')
++   output <- dbGetQuery(mongo, 'test_data', '{"EMPTY": "EMPTY"}')
++   dbRemoveQuery(mongo, "test_data", '{}')
++   dbDisconnect(mongo)
++   checkEquals(data.frame(), output)
++ }
 > 
+> test.dbGetQuerySorting <- function(){
++   #insert the records using r-mongo-scala project
++   mongo <- mongoDbConnect("test")
++   dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
++   dbInsertDocument(mongo, "test_data", '{"foo": "newbar"}')
++   
++   output <- dbGetQuery(mongo, "test_data", '{ "$query": {}, "$orderby": { "foo": -1 } }}')
++   dbRemoveQuery(mongo, "test_data", '{}')
++   dbDisconnect(mongo)
++   
++   checkEquals("newbar", as.character(output[1,]$foo))
++ }
 > 
+> test.dbGetQueryForKeys <- function(){
++   mongo <- mongoDbConnect("test")
++   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar", "size": 5}')
++   results <- dbGetQueryForKeys(mongo, "test_data", '{"foo": "bar"}', '{"foo": 1}')
++   dbRemoveQuery(mongo, "test_data", '{}')
++   dbDisconnect(mongo)
++ 
++   checkEquals(TRUE, any(names(results) == "foo"))
++   checkEquals(TRUE, any(names(results) != "size"))
++ }
 > 
-> cleanEx()
-> nameEx("dbDisconnect-methods")
-> ### * dbDisconnect-methods
+> test.dbInsertStructured <- function(){
++   mongo <- mongoDbConnect("test")  
++   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar", "structured":  {"foo": "baz"}}')
++   output <- dbGetQuery(mongo, "test_data", '{}')
++ 
++   dbRemoveQuery(mongo, "test_data", '{}')
++   dbDisconnect(mongo)
++   checkEquals("{ \"foo\" : \"baz\"}", as.character(output[1,]$structured))
++ }
 > 
-> flush(stderr()); flush(stdout())
+> test.dbGetDistinct <- function(){
++   mongo <- mongoDbConnect("test")
++   dbInsertDocument(mongo, "test_data", '{"foo": "bar and baz"}')
++   dbInsertDocument(mongo, "test_data", '{"foo": "baz and bar"}')
++   
++   output <- dbGetDistinct(mongo, "test_data", 'foo')
++   dbRemoveQuery(mongo, "test_data", '{}')
++   dbDisconnect(mongo)
++   
++   checkEquals("bar and baz", as.character(output[1]))
++   checkEquals("baz and bar", as.character(output[2]))
++ }
 > 
-> ### Name: dbDisconnect-methods
-> ### Title: Disconnect from the MongoDB database
-> ### Aliases: dbDisconnect dbDisconnect-methods dbDisconnect,RMongo-method
+> test.dbAggregate <- function(){
++   mongo <- mongoDbConnect("test")
++   dbInsertDocument(mongo, "test_data", '{"foo": "bar", "size": 5 }')
++   dbInsertDocument(mongo, "test_data", '{"foo": "nl", "size": 10 }')
++   
++   output <- dbAggregate(mongo, "test_data", c(' { "$project" : { "baz" : "$foo" } } ',
++                                               ' { "$group" : { "_id" : "$baz" } } ',
++                                                ' { "$match" : { "_id" : "bar" } } '))
++   dbRemoveQuery(mongo, "test_data", '{}')
++   dbDisconnect(mongo)
++   
++   # print(length(output))
++   print(as.character(output[1]))
++ 
++   checkEquals("{ \"_id\" : \"bar\"}", as.character(output[1]))
++   # checkEquals("bar", as.character(output[1]))
++ }
 > 
-> ### ** Examples
+> test.dbInsertDocument()
+2013-09-07 12:41:15.990 R[7095:f07] Apple AWT Java VM was loaded on first thread -- can't start AWT.
+[1] TRUE
+> test.dbRemoveQuery()
+[1] TRUE
+> test.dbGetQuery()
+[1] TRUE
+> test.dbGetQuerySkipAndLimit()
+[1] TRUE
+> test.dbGetQueryWithEmptyCollection()
+[1] TRUE
+> test.dbGetQuerySorting()
+[1] TRUE
+> test.dbGetQueryForKeys()
+[1] TRUE
+> test.dbInsertStructured()
+[1] TRUE
+> test.dbGetDistinct()
+[1] TRUE
+> test.dbAggregate()
+[1] "{ \"_id\" : \"bar\"}"
+[1] TRUE
 > 
->   mongo <- mongoDbConnect("test")
->   dbDisconnect(mongo)
-> 
-> 
-> 
-> cleanEx()
-> nameEx("dbGetQuerForKeys-methods")
-> ### * dbGetQuerForKeys-methods
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: dbGetQueryForKeys-methods
-> ### Title: Performing a MongoDB query and return only a subset of the keys
-> ### Aliases: dbGetQueryForKeys dbGetQueryForKeys-methods
-> ###   dbGetQueryForKeys,RMongo,character,character,character,missing,missing-method
-> ###   dbGetQueryForKeys,RMongo,character,character,character,numeric,numeric-method
-> 
-> ### ** Examples
-> 
->   mongo <- mongoDbConnect("test")
->   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
->   results <- dbGetQueryForKeys(mongo, "test_data", '{"foo":"bar"}', '{"foo": 1}', 0, 100)
-> 
-> 
-> 
-> cleanEx()
-> nameEx("dbGetQuery-methods")
-> ### * dbGetQuery-methods
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: dbGetQuery-methods
-> ### Title: Performing a MongoDB query
-> ### Aliases: dbGetQuery dbGetQuery-methods
-> ###   dbGetQuery,RMongo,character,character-method
-> ###   dbGetQuery,RMongo,character,character,missing,missing-method
-> ###   dbGetQuery,RMongo,character,character,numeric,numeric-method
-> 
-> ### ** Examples
-> 
->   mongo <- mongoDbConnect("test")
->   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
->   output <- dbGetQuery(mongo, 'test_data', '{"foo": "bar"}')
-> 
-> 
-> 
-> cleanEx()
-> nameEx("dbInsertDocument-methods")
-> ### * dbInsertDocument-methods
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: dbInsertDocument-methods
-> ### Title: Insert a document into a MongoDB collection
-> ### Aliases: dbInsertDocument dbInsertDocument-methods
-> ###   dbInsertDocument,RMongo,character,character-method
-> 
-> ### ** Examples
-> 
->   mongo <- mongoDbConnect("test")
->   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
->   dbDisconnect(mongo)
-> 
-> 
-> 
-> cleanEx()
-> nameEx("dbShowCollections-methods")
-> ### * dbShowCollections-methods
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: dbShowCollections-methods
-> ### Title: Shows a list of collections
-> ### Aliases: dbShowCollections dbShowCollections-methods
-> ###   dbShowCollections,RMongo-method
-> 
-> ### ** Examples
-> 
->   mongo <- mongoDbConnect("test")
->   dbShowCollections(mongo)
-[1] "system.indexes" "test_data"     
->   dbDisconnect(mongo)
-> 
-> 
-> 
-> cleanEx()
-> nameEx("mongoDbConnect")
-> ### * mongoDbConnect
-> 
-> flush(stderr()); flush(stdout())
-> 
-> ### Name: mongoDbConnect
-> ### Title: Connecting to a MongoDB database
-> ### Aliases: mongoDbConnect
-> 
-> ### ** Examples
-> 
->   mongo <- mongoDbConnect("test", "127.0.0.1", 27017)
-> 
-> 
-> 
-> ### * <FOOTER>
-> ###
-> cat("Time elapsed: ", proc.time() - get("ptime", pos = 'CheckExEnv'),"\n")
-Time elapsed:  1.699 0.076 1.5 0 0 
-> grDevices::dev.off()
-null device 
-          1 
-> ###
-> ### Local variables: ***
-> ### mode: outline-minor ***
-> ### outline-regexp: "\\(> \\)?### [*]+" ***
-> ### End: ***
-> quit('no')
+> proc.time()
+   user  system elapsed 
+  1.466   0.077   1.267 
