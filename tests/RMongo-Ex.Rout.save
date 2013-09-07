@@ -131,7 +131,6 @@ Loading required package: rJava
 + }
 > 
 > test.dbInsertDocument()
-2013-09-07 12:41:15.990 R[7095:f07] Apple AWT Java VM was loaded on first thread -- can't start AWT.
 [1] TRUE
 > test.dbRemoveQuery()
 [1] TRUE
@@ -155,4 +154,4 @@ Loading required package: rJava
 > 
 > proc.time()
    user  system elapsed 
-  1.466   0.077   1.267 
+  1.485   0.077   1.293 

@@ -1,3 +1,5 @@
+Sys.setenv(NOAWT = "1")
+
 library("RUnit")
 library("RMongo")
 library('rJava')
