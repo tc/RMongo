@@ -70,14 +70,8 @@ setMethod("dbGetQueryForKeys", signature(rmongo.object="RMongo", collection="cha
 )
 
 setGeneric("dbGetQuery", function(rmongo.object, collection, query, skip=0, limit=1000) standardGeneric("dbGetQuery"))
-setMethod("dbGetQuery", signature(rmongo.object="RMongo", collection="character", query="character", skip='numeric', limit='numeric'),
+setMethod("dbGetQuery", signature(rmongo.object="RMongo", collection="character", query="character"),
   function(rmongo.object, collection, query, skip, limit){
-    dbGetQueryForKeys(rmongo.object, collection, query, "{}", skip, limit)
-  }
-)
-
-setMethod("dbGetQuery", signature(rmongo.object="RMongo", collection="character", query="character", skip='missing', limit='missing'),
-  function(rmongo.object, collection, query, skip=0, limit=1000){
     dbGetQueryForKeys(rmongo.object, collection, query, "{}", skip, limit)
   }
 )
