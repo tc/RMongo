@@ -41,6 +41,24 @@ test.dbGetQuerySkipAndLimit <- function(){
   checkEquals(1, length(output[output$foo == 'bar', 1]))
 }
 
+test.dbGetQuerySkip <- function(){
+  mongo <- mongoDbConnect("test")
+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
+  output <- dbGetQuery(mongo, "test_data", '{"foo": "bar"}', skip=1)
+  dbRemoveQuery(mongo, "test_data", '{}')
+  dbDisconnect(mongo)
+  checkEquals(1, length(output[output$foo == 'bar', 1]))
+}
+test.dbGetQueryLimit <- function(){
+  mongo <- mongoDbConnect("test")
+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
+  output <- dbGetQuery(mongo, "test_data", '{"foo": "bar"}', limit=1)
+  dbRemoveQuery(mongo, "test_data", '{}')
+  dbDisconnect(mongo)
+  checkEquals(1, length(output[output$foo == 'bar', 1]))
+}
 test.dbGetQueryWithEmptyCollection <- function(){
   mongo <- mongoDbConnect('test')
   output <- dbGetQuery(mongo, 'test_data', '{"EMPTY": "EMPTY"}')
