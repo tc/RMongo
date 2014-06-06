@@ -25,6 +25,9 @@ Email CRAN@R-project.org notifying a new release has been made.
 
 CHANGELOG
 ---
+0.1.0 [unreleased]
+Updated scala to 2.11.1 and mongo-java-driver to 2.12.2
+
 0.0.25
 Restored R 2.14 comp. Added replicaset support. thanks @benoitlouy
 
