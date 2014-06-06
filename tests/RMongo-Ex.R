@@ -17,18 +17,20 @@ test.dbRemoveQuery <- function(){
   output <- dbRemoveQuery(mongo, "test_data", '{}')
   dbDisconnect(mongo)
 
-  checkEquals("ok", output)  
+  checkEquals("ok", output)
 }
 
 test.dbGetQuery <- function(){
   mongo <- mongoDbConnect("test")
   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar"}')
   output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar with spaces"}')
+  output <- dbInsertDocument(mongo, "test_data", '{"foo": "bar with \n\r new lines"}')
   output <- dbGetQuery(mongo, 'test_data', '{"foo": { "$regex": "bar*", "$options": "i"} }')
   dbRemoveQuery(mongo, "test_data", '{}')
   dbDisconnect(mongo)
   checkEquals("bar", as.character(output[1,]$foo))
   checkEquals("bar with spaces", as.character(output[2,]$foo))
+  checkEquals("bar with \n\r new lines", as.character(output[3,]$foo))
 }
 
 test.dbGetQuerySkipAndLimit <- function(){
