@@ -52,8 +52,8 @@ class MongoTest{
     Assert.assertEquals("ok", response)
 
     val duplicateResponse = rMongo.dbInsertDocument("test_data", doc)
-
-    Assert.assertEquals("E11000 duplicate key error index: test.test_data.$_id_  dup key: { : \"foo\" }", duplicateResponse)
+    var errMsg = """E11000 duplicate key error index: test.test_data.$_id_ dup key: { : "foo" }"""
+    Assert.assertEquals(errMsg, duplicateResponse)
   }
 
   @Test
@@ -67,8 +67,8 @@ class MongoTest{
     Assert.assertEquals("ok", response)
 
     val duplicateResponse = rMongo.dbInsertDocument("test_data", doc)
-
-    Assert.assertEquals("E11000 duplicate key error index: test.test_data.$_id_  dup key: { : \"foo\" }", duplicateResponse)
+    var errMsg = """E11000 duplicate key error index: test.test_data.$_id_ dup key: { : "foo" }"""
+    Assert.assertEquals(errMsg, duplicateResponse)
   }
 
   @Test
