@@ -10,19 +10,10 @@ import java.util.Arrays
 import java.util.logging.Logger
 import java.util.logging.Level
 
-/**
- *
- * User: @tommychheng
- * Date: Sep 23, 2010
- * Time: 9:36:10 PM
- *
- *
- */
-
 class RMongo(dbName: String, hosts: String, replica: Boolean) {
   val mongoLogger = Logger.getLogger("com.mongodb")
   mongoLogger.setLevel(Level.SEVERE)
-  val servers = hosts.split(",").map(_.trim.split(":")).map { a => 
+  val servers = hosts.split(",").map(_.trim.split(":")).map { a =>
     if (a.size < 2) new ServerAddress(a(0), 27017) else new ServerAddress(a(0), a(1).toInt)
   }.toList
   val this.replica = replica
@@ -37,7 +28,7 @@ class RMongo(dbName: String, hosts: String, replica: Boolean) {
   def dbAuthenticate(username:String, password:String):Boolean = {
     db.authenticate(username, password.toCharArray)
   }
-	
+
   def dbSetWriteConcern(w: Int, wtimeout: Int, fsync: Boolean, j: Boolean) {
     writeConcern = new WriteConcern(w, wtimeout, fsync, j)
   }
@@ -106,7 +97,7 @@ class RMongo(dbName: String, hosts: String, replica: Boolean) {
   def dbGetDistinct(collectionName: String, key: String): String = {
     dbGetDistinct(collectionName, key, "")
   }
-  
+
   def dbGetDistinct(collectionName: String, key: String, query: String): String = {
     val dbCollection = db.getCollection(collectionName)
 
@@ -131,7 +122,7 @@ class RMongo(dbName: String, hosts: String, replica: Boolean) {
         queryArray(i) = JSON.parse(query).asInstanceOf[DBObject]
     }
     var aggregateIterator = dbCollection.aggregate(queryArray(0), Arrays.copyOfRange(queryArray, 1, queryArray.length):_*).results.iterator
-        
+
     val results = ListBuffer[String]()
     while (aggregateIterator.hasNext) {
       val item = aggregateIterator.next
@@ -165,17 +156,17 @@ object RMongo{
   }
 
   def toCsvOutput(cursor: DBCursor): String = {
-    
+
     if(cursor.hasNext == false) return ""
-   
+
     val results = ListBuffer[String]()
-    
+
     if (cursor.getKeysWanted != null && cursor.getKeysWanted.keySet.size != 0) {
         /* If fields were specified (save time) */
         val keysWanted = cursor.getKeysWanted
         keysWanted.put("_id", 1)
         val keys = keysWanted.keySet.toArray(new Array[String](keysWanted.keySet.size))
-        results.append(keys.mkString(SEPARATOR)) 
+        results.append(keys.mkString(SEPARATOR))
         while (cursor.hasNext) {
             results.append(csvRowFromDBObject(keys, cursor.next))
         }
@@ -187,7 +178,7 @@ object RMongo{
             keysWanted.addAll(ccursor.next.keySet)
         }
         val keys = keysWanted.toArray(new Array[String](keysWanted.size))
-        results.append(keys.mkString(SEPARATOR)) 
+        results.append(keys.mkString(SEPARATOR))
         while (cursor.hasNext) {
             results.append(csvRowFromDBObject(keys, cursor.next))
         }
@@ -196,7 +187,7 @@ object RMongo{
     results.mkString("\n")
   }
 
-  def csvRowFromDBObject(keys:Array[String], item:DBObject):String ={
+  def csvRowFromDBObject(keys:Array[String], item:DBObject):String = {
 
     keys.map{k =>
       val value = item.get(k)

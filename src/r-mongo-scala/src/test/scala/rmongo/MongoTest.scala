@@ -40,11 +40,11 @@ class MongoTest{
 
     assert(rMongo.dbShowCollections().contains(collectionName))
   }
-  
+
   @Test
   def testDbReplicaSetInsertDocument{
     clearTestDB
-    
+
     val rMongo = new RMongo("test", "localhost", true)
     val doc = """ {"_id": "foo", "foo": "bar", "size": 5} """
 
@@ -162,14 +162,21 @@ class MongoTest{
 
   @Test
   def testToCsvOutput{
-    val m = new Mongo()
-    val db = m.getDB("test")
-    val collection = db.getCollection("test_data")
+    clearTestDB
+
+    val rMongo = new RMongo("test")
+
+    val doc = """ {"_id": "foo", "foo": "bar\n\r should not break", "size": 5} """
+    val response = rMongo.dbInsertDocument("test_data", doc)
+
     val query = "{}"
     val queryObject = JSON.parse(query).asInstanceOf[DBObject]
+    val collection = db.getCollection("test_data")
     val cursor = collection.find(queryObject)
 
     val results = RMongo.toCsvOutput(cursor)
+
+    assert(results != null)
   }
 
   def parsedFirstRecordFrom(results: String):Map[String, Any] = {
@@ -181,24 +188,24 @@ class MongoTest{
 
     keys.zip(entry).toMap
   }
-  
+
   @Test
   def testDbGetDistinct{
      val rMongo = new RMongo("test")
      val results = rMongo.dbGetDistinct("test_data", "size")
-     
+
      Assert.assertEquals("\"5\"\n\"10\"", results)
   }
 
   @Test
   def testDbAggregate{
      val rMongo = new RMongo("test")
-     var pipeline = Array( 
+     var pipeline = Array(
        """ { "$project" : { "baz" : "$foo" } } """,
        """ { "$group" : { "_id" : "$baz" } } """,
        """ { "$match" : { "_id" : "bar" } } """)
      val results = rMongo.dbAggregate("test_data", pipeline)
-     
+
      //Assert.assertEquals("\"{ \"_id\" : \"bar\"}\"", results)
      assert(results.contains("{ \"_id\" : \"bar\"}"))
   }
