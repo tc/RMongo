@@ -10,5 +10,5 @@ License: GPL-3
 LazyLoad: yes
 Depends: R(>= 2.14.1), rJava, methods
 Suggests: RUnit
-SystemRequirements: Java (>= 1.6), MongoDB (>= 1.6)
+SystemRequirements: Java (>= 1.7), MongoDB (>= 1.6)
 URL: http://github.com/tc/RMongo
