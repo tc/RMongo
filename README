@@ -5,6 +5,8 @@ http://github.com/tc/RMongo
 
 This is a R package which lets you query MongoDB databases.
 
+The sources for the java files are in ``src/r-mongo-scala``
+
 Feel free to report bugs/feature requests on github.
 
 Validate:
