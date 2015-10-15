@@ -16,6 +16,11 @@ mongoDbReplicaSetConnect <- function(dbName, hosts="127.0.0.1:27017"){
   rmongo
 }
 
+mongoDbReplicaSetConnectWithCredentials <- function(dbName, hosts="127.0.0.1:27017", username, pwd){
+rmongo <- new("RMongo", javaMongo = .jnew("rmongo/RMongo", dbName, hosts, TRUE, username, pwd))
+  rmongo
+}
+
 setGeneric("dbAuthenticate", function(rmongo.object, username, password) standardGeneric("dbAuthenticate"))
 setMethod("dbAuthenticate", signature(rmongo.object="RMongo", username="character", password="character"),
    function(rmongo.object, username, password){
