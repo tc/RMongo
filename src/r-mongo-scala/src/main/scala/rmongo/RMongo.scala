@@ -10,23 +10,28 @@ import java.util.Arrays
 import java.util.logging.Logger
 import java.util.logging.Level
 
-class RMongo(dbName: String, hosts: String, replica: Boolean) {
+class RMongo(dbName: String, hosts: String, replica: Boolean, username: String, pwd: String) {
   val mongoLogger = Logger.getLogger("com.mongodb")
   mongoLogger.setLevel(Level.SEVERE)
   val servers = hosts.split(",").map(_.trim.split(":")).map { a =>
     if (a.size < 2) new ServerAddress(a(0), 27017) else new ServerAddress(a(0), a(1).toInt)
   }.toList
   val this.replica = replica
-  val m = if (!this.replica) new MongoClient(servers(0)) else new MongoClient(servers)
+  val credential = mCreateCredential(username,dbName,pwd)
+  val m = if (!this.replica) new MongoClient(servers(0)) else new MongoClient(servers,List(credential))
   val db = m.getDB(dbName)
   var writeConcern = WriteConcern.NORMAL
 
-  def this(dbName: String, host: String, port: Int) = this (dbName, host + ":" + port, false)
+  def this(dbName: String, host: String, port: Int) = this (dbName, host + ":" + port, false,"","")
 
-  def this(dbName: String) = this (dbName, "127.0.0.1:27017", false)
+  def this(dbName: String) = this (dbName, "127.0.0.1:27017", false,"","")
 
   def dbAuthenticate(username:String, password:String):Boolean = {
     db.authenticate(username, password.toCharArray)
+  }
+  
+  def mCreateCredential(userName:String, database:String,password:String):MongoCredential = {
+	MongoCredential.createCredential(username,database,password.toCharArray)
   }
 
   def dbSetWriteConcern(w: Int, wtimeout: Int, fsync: Boolean, j: Boolean) {
